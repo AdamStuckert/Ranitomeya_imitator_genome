@@ -9,17 +9,24 @@
 # Falcon uses only a single input, a config file. Up to date info on config is here: https://github.com/PacificBiosciences/FALCON-integrate/wiki/Configuring-Unzip
 
 # Assemble
-```fc_run fc_run.cfg```
+```bash
+fc_run fc_run.cfg
+```
 
 # Unzip and polish
-```fc_unzip.py fc_unzip.cfg```
+```bash
+fc_unzip.py fc_unzip.cfg
+```
 
 # Extended phasing with HiC # not currently applicable.
-```fc_phase.py fc_phase.cfg```
+```bash
+fc_phase.py fc_phase.cfg
+```
 
 
 ##### General information on configs: 
-```[General]
+```bash
+[General]
 input_fofn=input.fofn # carriage return separated list of input fasta files with specified paths
 input_type=raw # `raw` or `preads` raw will invoke `0-rawreads` pre-assembly phase, `preads` will skip
 pa_DBdust_option=true # default is dusting is on and run after generating the raw read database. Can be modified with flag `pa_DBdust_option`
@@ -82,7 +89,8 @@ submit = qsub -S /bin/bash -sync y -V  \
 [job.step.da]
 NPROC=4
 MB=49152
-njobs=240```
+njobs=240
+```
 
 
 ##########################################
