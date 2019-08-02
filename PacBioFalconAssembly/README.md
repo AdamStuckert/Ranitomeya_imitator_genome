@@ -78,7 +78,7 @@ MB = 32768
 NPROC = 6
 njobs = 24
 submit = srun --wait=0 \
-	-p myqueue \
+	-p macmanes,shared \
 	-J ${JOB_NAME} \
 	-o ${JOB_STDOUT} \
 	-e ${JOB_STDERR} \
