@@ -9,17 +9,17 @@
 # Falcon uses only a single input, a config file. Up to date info on config is here: https://github.com/PacificBiosciences/FALCON-integrate/wiki/Configuring-Unzip
 
 # Assemble
-fc_run fc_run.cfg
+```fc_run fc_run.cfg```
 
 # Unzip and polish
-fc_unzip.py fc_unzip.cfg
+```fc_unzip.py fc_unzip.cfg```
 
 # Extended phasing with HiC # not currently applicable.
-fc_phase.py fc_phase.cfg
+```fc_phase.py fc_phase.cfg```
 
 
 ##### General information on configs: 
-[General]
+```[General]
 input_fofn=input.fofn # carriage return separated list of input fasta files with specified paths
 input_type=raw # `raw` or `preads` raw will invoke `0-rawreads` pre-assembly phase, `preads` will skip
 pa_DBdust_option=true # default is dusting is on and run after generating the raw read database. Can be modified with flag `pa_DBdust_option`
@@ -82,18 +82,18 @@ submit = qsub -S /bin/bash -sync y -V  \
 [job.step.da]
 NPROC=4
 MB=49152
-njobs=240
+njobs=240```
 
 
 ##########################################
 ############### To Submit ################
 ##########################################
-srun --wait=0 -p myqueue -J ${JOB_NAME} -o ${JOB_STDOUT} -e ${JOB_STDERR} --mem-per-cpu=${MB}M --cpus-per-task=${NPROC} ${JOB_SCRIPT}
+```srun --wait=0 -p myqueue -J ${JOB_NAME} -o ${JOB_STDOUT} -e ${JOB_STDERR} --mem-per-cpu=${MB}M --cpus-per-task=${NPROC} ${JOB_SCRIPT}```
 
 ### FALCON-Unzip Configuration
 
-[General]
+```[General]
 max_n_open_files = 1000 # can produce way too many `sam` files at a time, so they say maybe 300 files at a time...
 [Unzip]
 input_fofn=input.fofn # redundant with `fc_run.cfg` config file
-input_bam_fofn=input_bam.fofn # for polishing genome, specified list of bam files.
+input_bam_fofn=input_bam.fofn # for polishing genome, specified list of bam files.```
