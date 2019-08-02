@@ -76,15 +76,15 @@ pwatcher_type=blocking # `fs_based` is the default and relies on the pipeline po
 JOB_QUEUE = default
 MB = 32768
 NPROC = 6
-njobs = 32
-submit = qsub -S /bin/bash -sync y -V  \
-  -q ${JOB_QUEUE}     \
-  -N ${JOB_NAME}      \
-  -o "${JOB_STDOUT}"  \
-  -e "${JOB_STDERR}"  \
-  -pe smp ${NPROC}    \
-  -l h_vmem=${MB}M    \
-  "${JOB_SCRIPT}"
+njobs = 24
+submit = srun --wait=0 \
+	-p myqueue \
+	-J ${JOB_NAME} \
+	-o ${JOB_STDOUT} \
+	-e ${JOB_STDERR} \
+	--mem-per-cpu=${MB}M \
+	--cpus-per-task=${NPROC} \
+	${JOB_SCRIPT}
 
 [job.step.da]
 NPROC=4
