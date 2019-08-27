@@ -19,7 +19,12 @@ DIR=$(pwd)
 #bwa mem -t 24 nanopore_scaffolded2x_imitator.fasta ${DIR}/raw_10xdata/trimmed10x.R1.fastq.gz ${DIR}/raw_10xdata/trimmed10x.R2.fastq.gz | samtools sort -@24 -o ${DIR}/raw_10xdata/mapped10xreads.scaffold2.1.bam
 
 # samtools merge
-samtools merge -@24 ${DIR}/raw_10xdata/all.bam ${DIR}/raw_10xdata/*.bam
+# merge 2x to avoid file handle limits
+samtools merge -@24 ${DIR}/raw_10xdata/merged.1.bam ${DIR}/raw_10xdata/*[0-4].bam
+samtools merge -@24 ${DIR}/raw_10xdata/merged.2.bam ${DIR}/raw_10xdata/*[5-9].bam
+
+# merge the merged
+samtools merge -@24 ${DIR}/raw_10xdata/sorted10xreads.scaffold2.1.bam ${DIR}/raw_10xdata/merged*.bam
 
 # samtools sort
 samtools sort -@24 -o ${DIR}/raw_10xdata/sorted10xreads.scaffold2.1.bam ${DIR}/raw_10xdata/all.bam
