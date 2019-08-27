@@ -34,14 +34,14 @@ mkdir falcon_assembly
 touch falcon_assembly/PacBioFastaFiles.fofn
 for fasta in $(ls raw_PacBio_data/*/*subreads.fasta)
 do
-(printf '%s/raw_PacBio_data/%s \n' "$DIR" "$fasta") >> falcon_assembly/PacBioFastaFiles.fofn
+(printf '%s/%s \n' "$DIR" "$fasta") >> falcon_assembly/PacBioFastaFiles.fofn
 done
 
 # bam files second
 touch falcon_assembly/PacBioBamFiles.fofn
 for fasta in $(ls raw_PacBio_data/*/*subreads.bam)
 do
-(printf '%s/raw_PacBio_data/%s \n' "$DIR" "$fasta") >> falcon_assembly/PacBioBamFiles.fofn
+(printf '%s/%s \n' "$DIR" "$fasta") >> falcon_assembly/PacBioBamFiles.fofn
 done
 
 # run Falcon assembly
