@@ -13,8 +13,12 @@ module purge
 module load linuxbrew/colsa
 
 # create fasta files
-cd ${DIR}/raw_PacBio_data/3_C01/
-bam2fastx -o m64019_190803_173458.subreads m64019_190803_173458.subreads.bam
+cd ${DIR}/raw_PacBio_data/
+PBdat=$(ls */*subreads.bam | sed "s/bam//g")
+for data in PBdat
+do
+samtools fasta ${data}bam > ${data}fasta
+done
 
 cd ${DIR}
 
@@ -25,18 +29,19 @@ source activate pacbio-20190801
 
 
 ### create FOFN files
+mkdir falcon_assembly
 # fasta files first
-touch PacBioFastaFiles.fofn
-for fasta in $(ls raw_PacBio_data/*fasta)
+touch falcon_assembly/PacBioFastaFiles.fofn
+for fasta in $(ls raw_PacBio_data/*/*subreads.fasta)
 do
-(printf '%s/%s \n' "$DIR" "$fasta") >> PacBioFastaFiles.fofn
+(printf '%s/raw_PacBio_data/%s \n' "$DIR" "$fasta") >> falcon_assembly/PacBioFastaFiles.fofn
 done
 
 # bam files second
-touch PacBioBamFiles.fofn
-for fasta in $(ls raw_PacBio_data/*subreads.bam)
+touch falcon_assembly/PacBioBamFiles.fofn
+for fasta in $(ls raw_PacBio_data/*/*subreads.bam)
 do
-(printf '%s/%s \n' "$DIR" "$fasta") >> PacBioBamFiles.fofn
+(printf '%s/raw_PacBio_data/%s \n' "$DIR" "$fasta") >> falcon_assembly/PacBioBamFiles.fofn
 done
 
 # run Falcon assembly
