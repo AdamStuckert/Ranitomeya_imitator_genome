@@ -1,0 +1,19 @@
+#!/usr/bin/sh
+#SBATCH --ntasks=1
+#SBATCH --mem=490GB
+#SBATCH --job-name="masurca"
+#SBATCH --output="masurca.log"
+#SBATCH --partition=macmanes,shared
+#SBATCH --open-mode=append
+set -x
+
+module purge
+module load anaconda/colsa
+source activate masurca-3.3.1
+
+# run masurca
+echo RUNNING MASURCA PREP
+masurca imitator_masurca.config
+
+echo RUNNING MASURCA ASSEMBLY
+srun ./assemble.sh

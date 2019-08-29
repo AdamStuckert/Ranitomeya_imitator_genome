@@ -1,0 +1,21 @@
+#!/usr/bin/sh
+#SBATCH --ntasks=12
+#SBATCH --job-name="cat"
+#SBATCH --output="cat.log"
+#SBATCH --partition=macmanes,shared
+
+module load linuxbrew/colsa
+
+DIR=$(pwd)
+
+# convert nanopore data to fasta
+seqtk -a ${DIR}/allcombinedNanoporedataJuly2019.fastq > ${DIR}/masurca_assembly/nanoporedata.fasta
+
+# copy pacbio data 
+cp ${DIR}/falcon_assembly/m64019_190803_173458.subreads.fasta ${DIR}/masurca_assembly/
+
+# rename pacbio data
+mv ${DIR}/masurca_assembly/m64019_190803_173458.subreads.fasta ${DIR}/masurca_assembly/combinedreads.fa
+
+# combine nano + pacbio reads
+cat ${DIR}/masurca_assembly/nanoporedata.fasta >> ${DIR}/masurca_assembly/combinedreads.fa
