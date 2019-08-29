@@ -1,0 +1,30 @@
+#!/bin/bash
+#SBATCH --job-name=genome_metrics
+#SBATCH --output=genome.metrics.log
+#SBATCH --cpus-per-task=24
+#SBATCH --partition=macmanes,shared
+# echo commands to stdout
+set -x
+
+module purge
+module load linuxbrew/colsa
+
+DIR=$(pwd)
+ASSEMBLY=$1
+BUSCO_OUT=$2
+
+##### Quast analysis
+quast -1 ${DIR}/raw_10xdata/Rimi_S1_L001_R1_001.fastq.gz -2 ${DIR}/raw_10xdata/Rimi_S1_L001_R2_001.fastq.gz $ASSEMBLY -t 24 --eukaryote -m 50
+
+# print quast results
+echo QUAST RESULTS
+cat ${DIR}/quast_results/latest/report.txt
+
+###### BUSCO analysis
+## Tetrapoda lineage
+cp /mnt/lustre/macmaneslab/ams1236/Oyster_River_Protocol/busco_dbs/tetrapoda.config.ini .
+mv tetrapoda.config.ini config.ini
+
+export AUGUSTUS_CONFIG_PATH="/mnt/lustre/macmaneslab/ams1236/software/busco_info/config/"
+
+busco -i $ASSEMBLY -m geno --cpu 24 -o $BUSCO_OUT
