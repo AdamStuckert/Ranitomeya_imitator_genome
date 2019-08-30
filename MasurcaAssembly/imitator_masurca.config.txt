@@ -35,7 +35,7 @@ KMER_COUNT_THRESHOLD = 1
 #auto-detected number of cpus to use
 NUM_THREADS = 24
 #this is mandatory jellyfish hash size -- a safe value is estimated_genome_size*estimated_coverage
-JF_SIZE = 2864400
+JF_SIZE = 2864400 # atuomatically adjusted to 9649876415 by masurca, with the comment this may not be enough.
 #set this to 1 to use SOAPdenovo contigging/scaffolding module.  Assembly will be worse but will run faster. Useful for very large (>5Gbp) genomes
 SOAP_ASSEMBLY=1
 END
