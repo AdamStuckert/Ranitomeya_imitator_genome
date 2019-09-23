@@ -19,3 +19,7 @@ mv ${DIR}/masurca_assembly/m64019_190803_173458.subreads.fasta ${DIR}/masurca_as
 
 # combine nano + pacbio reads
 cat ${DIR}/masurca_assembly/nanoporedata.fasta >> ${DIR}/masurca_assembly/combinedreads.fa
+
+# add new PacBio reads
+cat ${DIR}/raw_PacBio_data/3_C01/m64019_190912_004210.subreads.fasta >> ${DIR}/masurca_assembly/combinedreads.fa
+cat ${DIR}/raw_PacBio_data/1_A01/m64019_190918_221316.subreads.fasta >> ${DIR}/masurca_assembly/combinedreads.fa
