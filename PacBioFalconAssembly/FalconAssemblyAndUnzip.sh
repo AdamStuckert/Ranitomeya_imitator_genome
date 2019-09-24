@@ -46,6 +46,8 @@ done
 
 # run Falcon assembly
 fc_run fc_run.cfg  &> FalconRun.log &
+# follow along
+tail -f FalconRun.log
 
 # run Falcon unzip
 mv all.log all0.log
