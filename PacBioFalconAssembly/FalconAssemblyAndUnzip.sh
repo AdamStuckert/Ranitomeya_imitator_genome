@@ -52,3 +52,9 @@ tail -f FalconRun.log
 # run Falcon unzip
 mv all.log all0.log
 fc_unzip.py fc_unzip.cfg &> FalconUnzip.std &
+
+
+# Follow up steps:
+# 1. Phase genomics
+# 2. Gap fill with LRGap
+# 3. Pilon polish via 10x data
