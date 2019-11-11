@@ -1,0 +1,31 @@
+#!/bin/bash
+#SBATCH --job-name=genome_metrics
+#SBATCH --output=genome.metrics.log
+#SBATCH --cpus-per-task=40
+#SBATCH --partition=macmanes
+# echo commands to stdout
+set -x
+
+module purge
+module load linuxbrew/colsa
+
+DIR=$(pwd)
+ASSEMBLY=$1
+BUSCO_OUT=$2
+
+##### Assemblathon stats analysis
+/mnt/lustre/macmaneslab/ams1236/software/assemblathon/assemblathon_stats.pl $ASSEMBLY | tee assembly_stats/${2}.stats
+
+# print results
+echo LENGTH AND CONTIGUITY RESULTS
+cat assembly_stats/${2}.stats
+
+
+###### BUSCO analysis
+## Tetrapoda lineage
+cp /mnt/lustre/macmaneslab/ams1236/Oyster_River_Protocol/busco_dbs/tetrapoda.config.ini .
+mv tetrapoda.config.ini config.ini
+
+export AUGUSTUS_CONFIG_PATH="/mnt/lustre/macmaneslab/ams1236/software/busco_info/config/"
+
+busco -i $ASSEMBLY -m geno --cpu 40 -o $BUSCO_OUT
