@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#SBATCH --partition=shared,macmanes
+#SBATCH -J pilon
+#SBATCH --output logs4pilon/pilon.%A_%a.log
+#SBATCH --array=0-79%5
+##### #SBATCH --dependency=afterany:278168
+
+
+ASSEMBLY="merged_quickmerged_pacbio_alldata.fasta"
+ASSEMBLY_OUT="imitator_merged_polished.fasta"
+species="Ranitomeya_imitator"
+prefix="Rimi"
+
+
+echo "SLURM_JOBID: " $SLURM_JOBID
+echo "SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
+echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
+
+DIR=$(pwd)
+CPU=$(echo $SLURM_ARRAY_TASK_ID | head -n0 | lscpu | grep CPU\(s\) | head -n1 | awk '{print $2}')
+
+java -jar -Xmx105G /mnt/lustre/macmaneslab/macmanes/pilon-1.23.jar --genome ${DIR}/${ASSEMBLY} \
+--frags ${DIR}/pilon_polish_rd1/"$prefix".sorted.bam \
+--output ${DIR}/chunks/pilonchunk.$SLURM_ARRAY_TASK_ID \
+--fix bases,gaps \
+--diploid \
+--threads $CPU \
+--flank 5 \
+--verbose \
+--mingap 1 \
+--nostrays \
+--targets ${DIR}/chunks/genomechunk.$SLURM_ARRAY_TASK_ID
+
+cat ${DIR}/chunks/pilon*fasta > ${DIR}/${ASSEMBLY_OUT}
