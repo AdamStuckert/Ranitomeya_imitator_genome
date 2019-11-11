@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#SBATCH --partition=macmanes
+#SBATCH -J imi_wtdbgcns
+#SBATCH --output %x.log
+#SBATCH --cpus-per-task=40
+#SBATCH --mem 700Gb
+#SBATCH --exclude node117
+
+cd $HOME/imitator_genome
+
+/mnt/lustre/macmaneslab/macmanes/wtdbg2/wtdbg2 \
+-o imi_wtdbg \
+-t 40 \
+-x sq \
+-g 8.5g \
+-X 30 \
+-i /mnt/lustre/macmaneslab/ams1236/imitator_genome/allcombinedNanoporedataJuly2019.fastq \
+-i /mnt/lustre/macmaneslab/ams1236/imitator_genome/raw_PacBio_data/1_A01/m64019_190918_221316.subreads.fasta \
+-i /mnt/lustre/macmaneslab/ams1236/imitator_genome/raw_PacBio_data/3_C01/m64019_190803_173458.subreads.fasta \
+-i /mnt/lustre/macmaneslab/ams1236/imitator_genome/raw_PacBio_data/3_C01/m64019_190912_004210.subreads.fasta \
+
+/mnt/lustre/macmaneslab/macmanes/wtdbg2/wtpoa-cns \
+-t 40 \
+-i imi_wtdbg.ctg.lay.gz \
+-fo imi_wtdbg.ctg.fa
