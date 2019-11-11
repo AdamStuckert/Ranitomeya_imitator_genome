@@ -1,0 +1,11 @@
+#!/bin/bash
+#SBATCH --partition=macmanes
+#SBATCH -J quickmerge
+#SBATCH --cpus-per-task=40
+#SBATCH --output %x.log
+#SBATCH --mem 310Gb
+#SBATCH --exclude node117
+
+
+
+merge_wrapper.py -pre quickmerged_pacbio_alldata $HOME/imitator_genome/imi_wtdbg.ctg.fa $HOME/imitator_genome/imitator.alldata.pacbiospec.wtdbg.ctg.fa
