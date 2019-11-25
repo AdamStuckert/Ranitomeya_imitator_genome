@@ -33,3 +33,14 @@ Pacbio only | 6.77 | 198779 | C:92.3%[S:75.4%,D:16.9%],F:4.6%,M:3.1%,n:3950
 Nanopore only | | | C:0.1%[S:0.1%,D:0.0%],F:1.7%,M:98.2%,n:3950 
 All data, PacBio specs | 7.82 | 149205 | C:91.9%[S:72.6%,D:19.3%],F:4.3%,M:3.8%,n:3950
 All data, ONT specs | 7.83 | 149048 | C:88.1%[S:69.4%,D:18.7%],F:7.3%,M:4.6%,n:3950
+
+I then quickmerged the PacBio only assembly with the all data PacBio specs assembly. 
+
+Code to merge:
+` merge_wrapper.py -pre imitator.1.0 $HOME/imitator_genome/imitator.alldata.pacbiospec.wtdbg.ctg.polished.fa $HOME/imitator_genome/imi_wtdbg.ctg.polished.fa `
+
+This assembly was probably not great (Contig N50 = 186687; total size = 8.28; BUSCO = C:92.5%[S:72.4%,D:20.1%],F:4.1%,M:3.4%,n:3950). In particular, I thought that the duplicated genes were inflated along with overall size. This may in fact be real, but it seems more so to be an artifact of assembly + merge. 
+
+
+
+
