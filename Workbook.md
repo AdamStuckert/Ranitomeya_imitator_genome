@@ -2,6 +2,9 @@
 
 This document is meant to be a working notebook of the insanity that is attempting this project. Much of this is experimental computational work, so I will document what we did in order to keep track of it for my own benefit.
 
+#### A note about genome assembly assessment
+Genomes were assessed with a script (`genomemetrics.job`) which runs `assemblathon_stats.pl` (script from [the assemblathon2 GitHub rep](https://github.com/ucdavis-bioinformatics/assemblathon2-analysis) and BUSCO 3.0.2 against the tetrapod core gene set. 
+
 ### Supernova assembly
 This took a while to run, but eventually completed. However, the assembly was small relative to what we expected (25% of tetrapod core genes) and crappy. Scaffolding with ONT reads helped, but it was still crappy. Abondoned in favor of assemblies with PacBio data.
 
