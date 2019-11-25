@@ -97,8 +97,8 @@ The next step is to run RAILS to fill gaps. We have PacBio data as well as ONT d
 
 So we are taking an experimental approach to this.
 
-1. PacBio data only
-2. ONT data only
+1. PacBio data only (submission: `sbatch --output rails.pb.log rails.pb.job imitator.1.1.fa pb`)
+2. ONT data only (submission: `sbatch --output rails.ont.log rails.ont.job imitator.1.1.fa ont`)
 3. PacBio + ONT data, with `pb` specs
 4. PacBio + ONT data, with `ont` specs
 5. PacBio + ONT data, with `nil` specs
