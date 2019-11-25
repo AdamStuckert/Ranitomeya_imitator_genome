@@ -45,6 +45,19 @@ $HOME/imitator_genome/imi_wtdbg.ctg.polished.fa
 
 This assembly was probably not great (Contig N50 = 186687; total size = 8.28; BUSCO = C:92.5%[S:72.4%,D:20.1%],F:4.1%,M:3.4%,n:3950). In particular, I thought that the duplicated genes were inflated along with overall size. This may in fact be real, but it seems more so to be an artifact of assembly + merge. 
 
+I then elected to move forward with just the initial PacBio assembly that I Pilon polished. That seemed to be the better approach. I then scaffolded this assembly with 10x data using `arcs`. I used the provided `arcs.mk` file and ran the `arcs` processes (ie `arcs.mk arcs`). Submission script for arcs:
 
+```bash
+sbatch arcs.job imitator.1.0.fa imitator.1.1.fa
+```
+
+Some notes here:
+1. My attempt to automate changing the produced assembly name did not initially work (and needs to be fixed still). Error: `cp: target ‘/mnt/lustre/macmaneslab/ams1236/imitator_genome/arcs_run/imitator.1.1.fa’ is not a directory`
+2. When I attempted to run my genome metrics script (`genomemetrics.job`, which runs an Assemblathon script + BUSCO), it turned out that the header names from the `arcs` program were too long. I fixed with:
+
+```awk -F',' '{print $1}' imitator.1.1.fa > tmp.fa
+mv tmp.fa imitator.1.1.fa ```
+
+This *needs to be added to arcs.job script after fixing the cp issue!*
 
 
