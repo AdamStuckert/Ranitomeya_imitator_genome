@@ -63,7 +63,8 @@ Some notes here:
 
 ```bash
 awk -F',' '{print $1}' imitator.1.1.fa > tmp.fa
-mv tmp.fa imitator.1.1.fa ```
+mv tmp.fa imitator.1.1.fa 
+```
 
 This *needs to be added to arcs.job script after fixing the cp issue!*
 
