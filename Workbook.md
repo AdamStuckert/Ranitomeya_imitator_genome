@@ -3,7 +3,7 @@
 This document is meant to be a working notebook of the insanity that is attempting this project. Much of this is experimental computational work, so I will document what we did in order to keep track of it for my own benefit.
 
 ### Supernova assembly
-This took a while to run, but eventually completed. However, the assembly was small relative to what we expected and crappy. Scaffolding with ONT reads helped, but it was still crappy. Abondoned in favor of assemblies with PacBio data.
+This took a while to run, but eventually completed. However, the assembly was small relative to what we expected (25% of tetrapod core genes) and crappy. Scaffolding with ONT reads helped, but it was still crappy. Abondoned in favor of assemblies with PacBio data.
 
 ### Falcon assembly
 This seemed very promising. However, it produced > 16 TB of intermediate files and we hit quota. I aim to resume this eventually, if possible.
@@ -21,6 +21,14 @@ We took 4 approaches to the initial assembly:
 3. Assembly with PacBio and Nanopore data with PacBio specs
 4. Assembly with PacBio and Nanopore data with ONT specs
 
-ONT only data was not good--it was shorter than expected and had poor gene coverage. Abondoned.
+ONT only data was not good--it was shorter than expected and had poor gene coverage. Abandoned without polishing.
 
 The assemblies with ONT data were larger (~0.5 GB) than the PacBio only assembly. However, after we Pilon polished these assemblies, we found that there was both a lower overall contiguity (Contig N50) and a marked increase in gene duplicates (from a BUSCO analysis to the tetrapod gene set).
+
+Proof from polished assemblies:
+
+Assembly | Genome Size (GB) | Contig N50 | BUSCO 
+Pacbio only | 6.77 | 198779 | C:92.3%[S:75.4%,D:16.9%],F:4.6%,M:3.1%,n:3950
+Nanopore only | | | C:0.1%[S:0.1%,D:0.0%],F:1.7%,M:98.2%,n:3950 
+All data, PacBio specs | 7.82 | 149205 | C:91.9%[S:72.6%,D:19.3%],F:4.3%,M:3.8%,n:3950
+All data, ONT specs | 7.83 | 149048 | C:88.1%[S:69.4%,D:18.7%],F:7.3%,M:4.6%,n:3950
