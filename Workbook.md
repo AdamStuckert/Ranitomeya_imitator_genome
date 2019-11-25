@@ -25,6 +25,17 @@ ONT only data was not good--it was shorter than expected and had poor gene cover
 
 The assemblies with ONT data were larger (~0.5 GB) than the PacBio only assembly. However, after we Pilon polished these assemblies, we found that there was both a lower overall contiguity (Contig N50) and a marked increase in gene duplicates (from a BUSCO analysis to the tetrapod gene set).
 
+Genome polishing (both these assemblies and subsequent iterations of this genome) is done in this fashion.
+
+```bash
+# first map Illumina (10x) reads to the genome
+sbatch bwa.job $ASSEMBLY $PILON_DIRECTORY
+# second, split up the genome into 80 chunks so pilon polishing doesn't take forever
+chunks.sh $ASSEMBLY
+# submit pilon polishing array
+sbatch pilon.job $ASSEMBLY $ASSEMBLY_OUT # directory within --frags flag has to be $PILON_DIRECTORY
+```
+
 Proof from polished assemblies:
 
 Assembly | Genome Size (GB) | Contig N50 | BUSCO 
