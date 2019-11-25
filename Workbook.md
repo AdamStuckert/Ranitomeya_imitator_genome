@@ -43,7 +43,13 @@ $HOME/imitator_genome/imitator.alldata.pacbiospec.wtdbg.ctg.polished.fa \
 $HOME/imitator_genome/imi_wtdbg.ctg.polished.fa
 ```
 
-This assembly was probably not great (Contig N50 = 186687; total size = 8.28; BUSCO = C:92.5%[S:72.4%,D:20.1%],F:4.1%,M:3.4%,n:3950). In particular, I thought that the duplicated genes were inflated along with overall size. This may in fact be real, but it seems more so to be an artifact of assembly + merge. 
+This assembly was probably not great.
+
+Assembly | Genome Size (GB) | Contig N50 | BUSCO 
+--- | --- | --- | ---
+Merged assembly | 8.28 | 186687 | C:92.5%[S:72.4%,D:20.1%],F:4.1%,M:3.4%,n:3950
+
+In particular, I thought that the duplicated genes were inflated along with overall size. This may in fact be real, but it seems more so to be an artifact of assembly + merge. 
 
 I then elected to move forward with just the initial PacBio assembly that I Pilon polished. That seemed to be the better approach. I then scaffolded this assembly with 10x data using `arcs`. I used the provided `arcs.mk` file and ran the `arcs` processes (ie `arcs.mk arcs`). Submission script for arcs:
 
