@@ -5,16 +5,19 @@ This document is meant to be a working notebook of the insanity that is attempti
 #### A note about genome assembly assessment
 Genomes were assessed with a script (`genomemetrics.job`) which runs `assemblathon_stats.pl` (script from [the assemblathon2 GitHub rep](https://github.com/ucdavis-bioinformatics/assemblathon2-analysis) and BUSCO 3.0.2 against the tetrapod core gene set. 
 
-### Supernova assembly
+#### A note about scripts used
+Scripts used in this notebook/project are found in the scripts directory. All `*.job` scripts are slurm submission scripts (our HPC here at UNH uses slurm) and all `*.sh` scripts are just generic bash scripts that run quickly on the head node.
+
+## Supernova assembly
 This took a while to run, but eventually completed. However, the assembly was small relative to what we expected (25% of tetrapod core genes) and crappy. Scaffolding with ONT reads helped, but it was still crappy. Abondoned in favor of assemblies with PacBio data.
 
-### Falcon assembly
+## Falcon assembly
 This seemed very promising. However, it produced > 16 TB of intermediate files and we hit quota. I aim to resume this eventually, if possible.
 
-### Masurca assembly
+## Masurca assembly
 This ran for about 35 days, was making almost no progress, and so I eventually gave up after reaching quota issues due to the Falcon assembly.
 
-### wtdbg2 assembly
+## wtdbg2 assembly
 This is the assembler that was used to produce the axolotl genome. This 1. works and 2. is fast. Much of this documentation is for this approach, largely because we were able to actually assemble a genome from it.
 
 We took 4 approaches to the initial assembly:
@@ -64,6 +67,8 @@ Assembly | Genome Size (GB) | Contig N50 | BUSCO
 Merged assembly | 8.28 | 186687 | C:92.5%[S:72.4%,D:20.1%],F:4.1%,M:3.4%,n:3950
 
 In particular, I thought that the duplicated genes were inflated along with overall size. This may in fact be real, but it seems more so to be an artifact of assembly + merge. 
+
+## Improving the assembly via scaffolding, gap-filling, polishing, etc
 
 I then elected to move forward with just the initial PacBio assembly that I Pilon polished. That seemed to be the better approach. I then scaffolded this assembly with 10x data using `arcs`. I used the provided `arcs.mk` file and ran the `arcs` processes (ie `arcs.mk arcs`). Submission script for arcs:
 
