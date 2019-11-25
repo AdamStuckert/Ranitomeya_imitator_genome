@@ -67,4 +67,9 @@ mv tmp.fa imitator.1.1.fa ```
 
 This *needs to be added to arcs.job script after fixing the cp issue!*
 
+Genome metrics from merged assembly:
+Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
+--- | --- | --- | --- | --- | ---
+Merged assembly | 6.78 | 198779 | 330635 | 0.02 | 
+
 
