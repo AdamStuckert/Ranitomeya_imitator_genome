@@ -37,7 +37,8 @@ All data, ONT specs | 7.83 | 149048 | C:88.1%[S:69.4%,D:18.7%],F:7.3%,M:4.6%,n:3
 I then quickmerged the PacBio only assembly with the all data PacBio specs assembly. 
 
 Code to merge:
-```merge_wrapper.py -pre imitator.1.0 \
+```
+merge_wrapper.py -pre imitator.1.0 \
 $HOME/imitator_genome/imitator.alldata.pacbiospec.wtdbg.ctg.polished.fa \
 $HOME/imitator_genome/imi_wtdbg.ctg.polished.fa
 ```
