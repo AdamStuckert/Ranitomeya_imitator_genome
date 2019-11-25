@@ -86,7 +86,7 @@ Genome metrics from assembly scaffolded with 10x data (which is imitator.1.1.fa)
 
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
-imitator.1.1.fa | 6.78 | 198779 | 330635 | 0.02 | 
+imitator.1.1.fa | 6.78 | 198779 | 330635 | 0.02 | (pending completion)
 
 The next step is to run RAILS to fill gaps. We have PacBio data as well as ONT data that we can run RAILS with. RAILS requires sequencing platform details (as it changes the algorithm of minimap2), and is specified as `pb`, `ont`, or `nil`. It is unclear the best way to run this.
 
