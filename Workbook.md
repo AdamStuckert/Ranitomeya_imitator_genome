@@ -28,6 +28,7 @@ The assemblies with ONT data were larger (~0.5 GB) than the PacBio only assembly
 Proof from polished assemblies:
 
 Assembly | Genome Size (GB) | Contig N50 | BUSCO 
+--- | --- | --- | ---
 Pacbio only | 6.77 | 198779 | C:92.3%[S:75.4%,D:16.9%],F:4.6%,M:3.1%,n:3950
 Nanopore only | | | C:0.1%[S:0.1%,D:0.0%],F:1.7%,M:98.2%,n:3950 
 All data, PacBio specs | 7.82 | 149205 | C:91.9%[S:72.6%,D:19.3%],F:4.3%,M:3.8%,n:3950
