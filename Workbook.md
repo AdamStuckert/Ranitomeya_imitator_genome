@@ -99,8 +99,8 @@ So we are taking an experimental approach to this.
 
 1. PacBio data only (submission: `sbatch --output rails.pb.log rails.pb.job imitator.1.1.fa pb`)
 2. ONT data only (submission: `sbatch --output rails.ont.log rails.ont.job imitator.1.1.fa ont`)
-3. PacBio + ONT data, with `pb` specs
-4. PacBio + ONT data, with `ont` specs
-5. PacBio + ONT data, with `nil` specs
+3. PacBio + ONT data, with `pb` specs (submission: `sbatch --output rails.alldat.pbspecs.log rails.job imitator.1.1.fa pb`)
+4. PacBio + ONT data, with `ont` specs (submission: `sbatch --output rails.alldat.ontspecs.log rails.job imitator.1.1.fa ont`)
+5. PacBio + ONT data, with `nil` specs (submission: `sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.1.fa nil`)
 
 Who know what is best???
