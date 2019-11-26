@@ -85,7 +85,7 @@ awk -F',' '{print $1}' imitator.1.1.fa > tmp.fa
 mv tmp.fa imitator.1.1.fa 
 ```
 
-This *needs to be added to arcs.job script after fixing the cp issue!*
+**This has been fixed, presumably. Leaving this here in case it does not work, so I have a starting point. I also added some cleanup code to remove files that aren't needed**
 
 Genome metrics from assembly scaffolded with 10x data (which is imitator.1.1.fa):
 
