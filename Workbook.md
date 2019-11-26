@@ -115,4 +115,4 @@ PB + ONT data, NIL specs |  |  |  |  |
 
 Choose assembly based off of this, and maybe re-scaffold with another? Eg, if PB only is best then ONT only, maybe choose PB scaffolded assembly, then scaffold with ONT reads.
 
-Following this--gapfilling with LRgap.
+Following this: pilon polishing and gapfilling with LRgap.
