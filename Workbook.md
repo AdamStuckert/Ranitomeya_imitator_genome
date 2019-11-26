@@ -103,4 +103,16 @@ So we are taking an experimental approach to this.
 4. PacBio + ONT data, with `ont` specs (submission: `sbatch --output rails.alldat.ontspecs.log rails.job imitator.1.1.fa ont`) # this one is the only one not currently running, other 4 currently are
 5. PacBio + ONT data, with `nil` specs (submission: `sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.1.fa nil`)
 
-Who know what is best???
+Who knows what is best??? Verify this with the assemblathon script and BUSCO.
+
+Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
+--- | --- | --- | --- | --- | ---
+PB data only |  |  |  |  | 
+ONT data only |  |  |  |  | 
+PB + ONT data, PB specs |  |  |  |  | 
+PB + ONT data, ONT specs |  |  |  |  | 
+PB + ONT data, NIL specs |  |  |  |  | 
+
+Choose assembly based off of this, and maybe re-scaffold with another? Eg, if PB only is best then ONT only, maybe choose PB scaffolded assembly, then scaffold with ONT reads.
+
+Following this--gapfilling with LRgap.
