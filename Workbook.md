@@ -108,7 +108,7 @@ Who knows what is best??? Verify this with the assemblathon script and BUSCO.
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
 PB data only |  |  |  |  | 
-ONT data only |  |  |  |  | 
+ONT data only | 6.79 | 201935 | 332101 |  | 
 PB + ONT data, PB specs |  |  |  |  | 
 PB + ONT data, ONT specs |  |  |  |  | 
 PB + ONT data, NIL specs |  |  |  |  | 
