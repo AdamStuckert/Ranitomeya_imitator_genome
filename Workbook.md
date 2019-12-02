@@ -107,11 +107,11 @@ Who knows what is best??? Verify this with the assemblathon script and BUSCO.
 
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
-PB data only |  |  |  |  | 
-ONT data only | 6.79 | 201935 | 332101 |  | 
-PB + ONT data, PB specs |  |  |  |  | 
-PB + ONT data, ONT specs |  |  |  |  | 
-PB + ONT data, NIL specs |  |  |  |  | 
+PB data only | 6.78 | 201277 | 336960 | 0.02 | C:92.5%[S:75.1%,D:17.4%],F:4.4%,M:3.1%,n:3950 |
+ONT data only | 6.79 | 201935 | 332101 | | C:92.3%[S:74.9%,D:17.4%],F:4.4%,M:3.3%,n:3950 | 
+PB + ONT data, PB specs |  |  |  |  |  |
+PB + ONT data, ONT specs | 6.78 | 201935 | 332101 | 0.02 | C:92.3%[S:74.9%,D:17.4%],F:4.4%,M:3.3%,n:3950 |
+PB + ONT data, NIL specs | 6.79 | 204382 | 339129 | 0.01 | C:92.5%[S:75.1%,D:17.4%],F:4.4%,M:3.1%,n:3950 |
 
 Choose assembly based off of this, and maybe re-scaffold with another? Eg, if PB only is best then ONT only, maybe choose PB scaffolded assembly, then scaffold with ONT reads.
 
