@@ -133,3 +133,7 @@ Workaround, probably should go in `bwa.job` at the beginning of script:
 awk '{print $1}' $ASSEMBLY > new.fasta
 mv new.fasta $ASSEMBLY 
 ```
+
+Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
+--- | --- | --- | --- | --- | ---
+imitator.1.2.1.fa | 6.79 | 211576 | 339195 | 0.01 | pending
