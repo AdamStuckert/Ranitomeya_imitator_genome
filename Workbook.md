@@ -124,3 +124,12 @@ Using this assembly, renaming it `imitator.1.2.fa`.
 
 
 Following this: pilon polishing and gapfilling with LRgap.
+
+
+**been repeatedly bitten by the damn bwa/pilon naming of contigs/scaffold issue. add a workaround to one script or another!**
+
+Workaround, probably should go in `bwa.job` at the beginning of script:
+```bash
+awk '{print $1}' $ASSEMBLY > new.fasta
+mv new.fasta $ASSEMBLY 
+```
