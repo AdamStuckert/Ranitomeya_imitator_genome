@@ -137,3 +137,10 @@ mv new.fasta $ASSEMBLY
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
 imitator.1.2.1.fa | 6.79 | 211576 | 339195 | 0.01 | C:92.7%[S:74.5%,D:18.2%],F:4.3%,M:3.0%,n:3950
+
+Ran a round of gapfilling. First I filled independently with ONT data and PacBio data to see how it performed.
+
+Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
+--- | --- | --- | --- | --- | ---
+imitator.1.2.1--ONTgapfilled | 6.79 | 247642 | 339195 | 0.01 | pending
+imitator.1.2.1--PacBiogapfilled |  |  |  |  | 
