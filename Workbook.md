@@ -152,5 +152,5 @@ Gap-filled assembly metrics:
 
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
-imitator.1.2.2 | 6.79 | 247642 | 339195 | 0.01 | pending
+imitator.1.2.2 | 6.79 | 247642 | 339195 | 0.01 | C:92.6%[S:74.5%,D:18.1%],F:4.3%,M:3.1%,n:3950
 imitator.1.2.1--PacBiogapfilled |  |  |  |  | 
