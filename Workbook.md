@@ -138,12 +138,12 @@ Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO
 --- | --- | --- | --- | --- | ---
 imitator.1.2.1.fa | 6.79 | 211576 | 339195 | 0.01 | C:92.7%[S:74.5%,D:18.2%],F:4.3%,M:3.0%,n:3950
 
-Ran a round of gapfilling. First I filled independently with ONT data and PacBio data to see how it performed.
+Ran a round of gapfilling. First I filled with ONT data and then I fileed that assembly with PacBio data.
 
 Code to submit these two attempts:
 ```bash
-sbatch lrgap.pb.job imitator.1.2.1.fa
 sbatch lrgap.ont.job imitator.1.2.1.fa
+sbatch lrgap.pb.job imitator.1.2.2.fa
 ```
 
 **note: add code to these scripts to extract the assembly out of iteration-3/gapclosed.fasta and into directory of choice, with name of choice**
@@ -152,5 +152,5 @@ Gap-filled assembly metrics:
 
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
-imitator.1.2.2 | 6.79 | 247642 | 339195 | 0.01 | C:92.6%[S:74.5%,D:18.1%],F:4.3%,M:3.1%,n:3950
-imitator.1.2.1--PacBiogapfilled |  |  |  |  | 
+imitator.1.2.2 (ONT filled) | 6.79 | 247642 | 339195 | 0.01 | C:92.6%[S:74.5%,D:18.1%],F:4.3%,M:3.1%,n:3950
+imitator.1.2.3 (PacBio filled) | 6.79 | 272070 | 339195 | 0.00 | pending
