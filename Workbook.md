@@ -153,4 +153,6 @@ Gap-filled assembly metrics:
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
 imitator.1.2.2 (ONT filled) | 6.79 | 247642 | 339195 | 0.01 | C:92.6%[S:74.5%,D:18.1%],F:4.3%,M:3.1%,n:3950
-imitator.1.2.3 (PacBio filled) | 6.79 | 272070 | 339195 | 0.00 | pending
+imitator.1.2.3 (PacBio filled) | 6.79 | 272070 | 339195 | 0.00 | C:92.7%[S:74.5%,D:18.2%],F:4.3%,M:3.0%,n:3950
+
+Next I will polish this gap-filled assembly with Pilon using 10x Illumina reads.
