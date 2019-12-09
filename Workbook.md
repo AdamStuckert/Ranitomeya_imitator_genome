@@ -146,8 +146,6 @@ sbatch lrgap.ont.job imitator.1.2.1.fa
 sbatch lrgap.pb.job imitator.1.2.2.fa
 ```
 
-**note: add code to these scripts to extract the assembly out of iteration-3/gapclosed.fasta and into directory of choice, with name of choice**
-
 Gap-filled assembly metrics:
 
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
@@ -156,3 +154,5 @@ imitator.1.2.2 (ONT filled) | 6.79 | 247642 | 339195 | 0.01 | C:92.6%[S:74.5%,D:
 imitator.1.2.3 (PacBio filled) | 6.79 | 272070 | 339195 | 0.00 | C:92.7%[S:74.5%,D:18.2%],F:4.3%,M:3.0%,n:3950
 
 Next I will polish this gap-filled assembly with Pilon using 10x Illumina reads.
+
+**quick note to self: fix pilon.job and bwa.job so that the pilon directory is hard coded**
