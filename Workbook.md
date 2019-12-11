@@ -119,8 +119,7 @@ Using this assembly, renaming it `imitator.1.2.fa`.
 
 `reads/combined_PacBio_Nanopore_reads.fa_vs_imitator.1.1.fa_90_0.90_rails.scaffolds.fa`
 
-**note: I should fix the rails script so it goes into a folder I want, and cleans up by deleting extraneous files too**
-
+**note: After this round of runs I modified the script to 1) accept an output assembly name and 2) remove large extraneous files (bam files, formatted data files)**
 
 
 Following this: pilon polishing and gapfilling with LRgap.
