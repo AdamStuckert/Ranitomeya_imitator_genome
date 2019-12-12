@@ -75,7 +75,7 @@ I then elected to move forward with just the initial PacBio assembly that I Pilo
 ```bash
 sbatch arcs.job imitator.1.0.fa imitator.1.1.fa
 ```
-
+(I probably have to rerun longranger to recreate this barcoded file...)
 Some notes here:
 1. My attempt to automate changing the produced assembly name did not initially work (and needs to be fixed still). Error: `cp: target ‘/mnt/lustre/macmaneslab/ams1236/imitator_genome/arcs_run/imitator.1.1.fa’ is not a directory`
 2. When I attempted to run my genome metrics script (`genomemetrics.job`, which runs an Assemblathon script + BUSCO), it turned out that the header names from the `arcs` program were too long. I fixed with:
