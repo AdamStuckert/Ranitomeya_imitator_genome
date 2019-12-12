@@ -18,7 +18,7 @@ This seemed very promising. However, it produced > 16 TB of intermediate files a
 This ran for about 35 days, was making almost no progress, and so I eventually gave up after reaching quota issues due to the Falcon assembly.
 
 ## wtdbg2 assembly
-This is the assembler that was used to produce the axolotl genome. This 1. works and 2. is fast. Much of this documentation is for this approach, largely because we were able to actually assemble a genome from it.
+This is the assembler that was used to produce the axolotl genome. This 1) works and 2) is fast. Much of this documentation is for this approach, largely because we were able to actually assemble a genome from it. The "good" `subreads.bam` from the sequencer had already been converted to fasta files using `samtools fasta` before this for our attempt using Falcon.
 
 We took 4 approaches to the initial assembly:
 
