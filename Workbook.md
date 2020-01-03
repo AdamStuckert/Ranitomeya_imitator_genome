@@ -160,4 +160,8 @@ Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO
 --- | --- | --- | --- | --- | ---
 imitator.1.3 (1.2.3, pilon polished) | 6.79 | 275328 | 339195 | 0.00 | C:92.7%[S:74.0%,D:18.7%],F:4.3%,M:3.0%,n:3950
 
-Now our cluster will go down for maintenance, so we will wait a while before resuming work.
+Scaffolded again with 10X data using arcs.
+
+Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
+--- | --- | --- | --- | --- | ---
+imitator.1.3.1 (10X scaffolded) | 6.79 | 275328 | 397353 | 0.01 | C:92.6%[S:73.6%,D:19.0%],F:4.3%,M:3.1%,n:3950-
