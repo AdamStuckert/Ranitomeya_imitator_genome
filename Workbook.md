@@ -162,9 +162,25 @@ imitator.1.3 (1.2.3, pilon polished) | 6.79 | 275328 | 339195 | 0.00 | C:92.7%[S
 
 Scaffolded again with 10X data using arcs.
 
+```bash
+sbatch arcs.job imitator.1.3.fa imitator.1.3.1.fa
+```
+
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
 imitator.1.3.1 (10X scaffolded) | 6.79 | 275328 | 397353 | 0.01 | C:92.6%[S:73.6%,D:19.0%],F:4.3%,M:3.1%,n:3950-
+
+Our cluster went down for routine maintenance/upgrade at this point. Everythings location went from `/mnt/lustre/` to `/mnt/home/`. I changed all the job submission scripts to represent this:
+
+```bash
+jobs=$(ls *job)
+for job in $jobs
+do
+sed -i "s/mnt\/lustre/mnt\/home/g" $job
+done
+```
+
+Anything that was a random script elsewhere also got updated in a similar fashion. Hopefully things will work with relative ease.
 
 Scaffold + gapfill with cobbler/rails.
 
