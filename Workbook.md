@@ -165,3 +165,10 @@ Scaffolded again with 10X data using arcs.
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
 imitator.1.3.1 (10X scaffolded) | 6.79 | 275328 | 397353 | 0.01 | C:92.6%[S:73.6%,D:19.0%],F:4.3%,M:3.1%,n:3950-
+
+Scaffold + gapfill with cobbler/rails.
+
+```bash
+sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.3.1.fa nil
+```
+
