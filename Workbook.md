@@ -185,6 +185,6 @@ Anything that was a random script elsewhere also got updated in a similar fashio
 Scaffold + gapfill with cobbler/rails.
 
 ```bash
-sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.3.1.fa nil
+sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.3.1.fa nil imitator.1.3.2.fa
 ```
 
