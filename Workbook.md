@@ -188,3 +188,15 @@ Scaffold + gapfill with cobbler/rails.
 sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.3.1.fa nil imitator.1.3.2.fa
 ```
 
+**add new genome metrics for 1.3.2 here**
+
+Next we did a round of pilon polishing, followed by LR_Gap filling.
+
+```bash
+# first map Illumina (10x) reads to the genome
+sbatch bwa.job imitator.1.3.2.fa
+# second, split up the genome into 80 chunks so pilon polishing doesn't take forever
+chunks.sh imitator.1.3.2.fa
+# submit pilon polishing array
+sbatch pilon.job imitator.1.3.2.fa imitator.1.3.3.fa
+```
