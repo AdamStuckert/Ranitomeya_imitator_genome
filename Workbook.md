@@ -189,6 +189,9 @@ sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.3.1.fa nil imitat
 ```
 
 **add new genome metrics for 1.3.2 here**
+Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
+--- | --- | --- | --- | --- | ---
+imitator.1.3.2 |  |  |  |  | 
 
 Next we did a round of pilon polishing.
 
@@ -207,3 +210,7 @@ Now on to LR gapfilling with the Nanopore data first, followed by the PacBio dat
 sbatch lrgap.ont.job imitator.1.3.3.fa imitator.1.3.4.fa
 sbatch lrgap.pb.job imitator.1.3.4.fa imitator.1.3.5.fa 
 ```
+
+Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
+--- | --- | --- | --- | --- | ---
+imitator.1.3.4 | 6.79 | 292624 | 397633 | 0.01 | 
