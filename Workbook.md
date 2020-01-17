@@ -188,7 +188,8 @@ Scaffold + gapfill with cobbler/rails.
 sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.3.1.fa nil imitator.1.3.2.fa
 ```
 
-**add new genome metrics for 1.3.2 here**
+New assembly metrics:
+
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
 imitator.1.3.2 | 6.79 | 275704 | 397634 | 0.01 | **pending**
