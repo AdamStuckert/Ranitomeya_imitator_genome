@@ -213,4 +213,4 @@ sbatch lrgap.pb.job imitator.1.3.4.fa imitator.1.3.5.fa
 
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
-imitator.1.3.4 | 6.79 | 292624 | 397633 | 0.01 | 
+imitator.1.3.4 | 6.79 | 292624 | 397633 | 0.01 | C:92.7%[S:73.6%,D:19.1%],F:4.3%,M:3.0%,n:3950
