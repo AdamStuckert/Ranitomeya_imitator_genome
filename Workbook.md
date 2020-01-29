@@ -226,5 +226,10 @@ sbatch bwa.job imitator.1.3.5.fa
 chunks.sh imitator.1.3.5.fa
 # submit pilon polishing array
 sbatch pilon.job imitator.1.3.5.fa imitator.1.3.6.fa
+```
 
+
+Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
+--- | --- | --- | --- | --- | ---
+imitator.1.3.6 | 6.79 | 301327 | 397629 | 0.01 | C:92.7%[S:73.6%,D:19.1%],F:4.3%,M:3.0%,n:3950
 The arrival of our Hi-C data is imminent. Rather than continuing to incrementally eek out improvements, I will wait for this data. Then, I will use the Hi-C data to scaffold the current assembly (1.3.5), as well as scaffold the original assembly. The rationale behind this is that while we have definitely improved the quality of the assembly, we have also had an increase of ~3% of duplicated genes. I would like to make sure that this is a "real" thing and not an assembly artifact.
