@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=macmanes,shared
-#SBATCH -J imitator.maker
+#SBATCH -J maker
 #SBATCH --ntasks=80
 #SBATCH --mem 110Gb
 #SBATCH --output imitator.maker.log
