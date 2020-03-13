@@ -1,7 +1,7 @@
 #-----Genome (these are always required)
 genome=
 model_org=Vertebrata
-protein=$HOME/imitator_genome/databases/uniprot_sprot.fasta
+protein=$HOME/imitator_genome/maker_data/uniprot_sprot.fasta
 repeat_protein=/mnt/lustre/software/anaconda/colsa/envs/maker-3.01.02/local/src/maker/data/te_proteins.fasta
 
 
@@ -15,7 +15,7 @@ pred_pass=0 #use ab-initio predictions in maker_gff: 1 = yes, 0 = no
 other_pass=0 #passthrough anyything else in maker_gff: 1 = yes, 0 = no
 
 #-----EST Evidence (for best results provide a file for at least one)
-est=$HOME/imitator_genome/databases/transcript_evidence/Ranitomeya_imitator_AC_3_ORP.ORP.fasta,$HOME/imitator_genome/databases/transcript_evidence/Ranitomeya_imitator_CA_8_ORP.ORP.fasta,$HOME/imitator_genome/databases/transcript_evidence/Ranitomeya_imitator_PO_3_ORP.ORP.fasta,$HOME/imitator_genome/databases/transcript_evidence/Ranitomeya_imitator_RP_10_ORP.ORP.fasta,$HOME/imitator_genome/databases/transcript_evidence/Ranitomeya_imitator_SA_1_ORP.ORP.fasta,$HOME/imitator_genome/databases/transcript_evidence/Ranitomeya_imitator_SR_6_ORP.ORP.fasta,$HOME/imitator_genome/databases/transcript_evidence/Ranitomeya_imitator_developmental_transcriptome.fasta
+est=$HOME/imitator_genome/maker_data/transcript_evidence/Ranitomeya_imitator_AC_3_ORP.ORP.fasta,$HOME/imitator_genome/maker_data/transcript_evidence/Ranitomeya_imitator_CA_8_ORP.ORP.fasta,$HOME/imitator_genome/maker_data/transcript_evidence/Ranitomeya_imitator_PO_3_ORP.ORP.fasta,$HOME/imitator_genome/maker_data/transcript_evidence/Ranitomeya_imitator_RP_10_ORP.ORP.fasta,$HOME/imitator_genome/maker_data/transcript_evidence/Ranitomeya_imitator_SA_1_ORP.ORP.fasta,$HOME/imitator_genome/maker_data/transcript_evidence/Ranitomeya_imitator_SR_6_ORP.ORP.fasta,$HOME/imitator_genome/maker_data/transcript_evidence/Ranitomeya_imitator_developmental_transcriptome.fasta
 altest=
 
 #-----Protein Homology Evidence (for best results provide a file for at least one)
