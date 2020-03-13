@@ -1,0 +1,42 @@
+#!/bin/bash
+#SBATCH --partition=macmanes,shared
+#SBATCH -J imitator.maker
+#SBATCH --ntasks=80
+#SBATCH --mem 110Gb
+#SBATCH --output imitator.maker.log
+
+
+module purge
+module load anaconda/colsa
+source activate maker-3.01.02
+
+species="Ranitomeya_imitator"
+genome="$HOME/imitator_genome/imitator.1.3.6.fa"
+PREFIX="Ranitomeya_imitator"
+
+mkdir -p $HOME/imitator_genome/maker_noRepeatModeler
+cd $HOME/imitator_genome/maker_noRepeatModeler
+
+mpiexec -n 80 /mnt/lustre/macmaneslab/macmanes/test/maker/bin/maker \
+-fix_nucleotides -base "$species" -quiet \
+-genome "$genome" \
+$HOME/imitator_genome/maker_data/maker_opts_uniprot.ctl \
+$HOME/imitator_genome/maker_data/maker_bopts.ctl \
+$HOME/imitator_genome/maker_data/maker_exe.ctl
+
+
+#######################################################################
+###########  is the lastal line correct here????   ####################
+#######################################################################
+
+
+fasta_merge -d "$species".maker.output/"$species"_master_datastore_index.log -o "$species"
+gff3_merge -d "$species".maker.output/"$species"_master_datastore_index.log -o "$species".gff3 -n
+lastal -P22 $HOME/imitator_genome/maker_data/uniprot "$species".all.maker.proteins.fasta -f BlastTab > blast.out
+maker_functional_fasta $HOME/imitator_genome/maker_data/uniprot_sprot.fasta blast.out "$species".all.maker.proteins.fasta > "$species".functional.proteins.fasta
+maker_functional_fasta $HOME/imitator_genome/maker_data/uniprot_sprot.fasta blast.out "$species".all.maker.transcripts.fasta > "$species".functional.transcripts.fasta
+maker_functional_gff $HOME/imitator_genome/maker_data/uniprot_sprot.fasta blast.out "$species".gff3 > "$species".functional.gff3
+maker_map_ids --prefix "$PREFIX" --justify 6 "$species".functional.gff3 > "$species".genome.all.id.map
+map_fasta_ids "$species".genome.all.id.map  "$species".functional.proteins.fasta
+map_gff_ids "$species".genome.all.id.map  "$species".functional.gff3
+map_fasta_ids "$species".genome.all.id.map  "$species".functional.transcripts.fasta
