@@ -235,3 +235,52 @@ imitator.1.3.6 | 6.79 | 301327 | 397629 | 0.01 | C:92.7%[S:73.6%,D:19.1%],F:4.3%
 
 
 The arrival of our Hi-C data is imminent. Rather than continuing to incrementally eek out improvements, I will wait for this data. Then, I will use the Hi-C data to scaffold the current assembly (1.3.5), as well as scaffold the original assembly. The rationale behind this is that while we have definitely improved the quality of the assembly, we have also had an increase of ~3% of duplicated genes. I would like to make sure that this is a "real" thing and not an assembly artifact.
+
+### Update from the pandemic 
+
+I'm beginning to think that our Hi-C data will never materialize. Thanks coronavirus! We are moving forward without the Hi-C data. I will run Maker to annotate the genome, as well as run BUSCO against the new version of the database/software. I've done some preliminary tests that indicate that running Maker alone to annotate will have issues due to repeat regions. So I'm running Maker twice: once as is and once after running Repeat Modeler and Repeat Masker.
+
+Stand alone Maker code is currently in the Maker directory. 
+
+Repeat Modeler code:
+
+```#!/bin/bash
+#SBATCH --job-name=repeatmod
+#SBATCH --output=repeatmodeler.log
+#SBATCH --partition=macmanes
+#SBATCH --ntasks=40
+#SBATCH --open-mode=append
+#SBATCH --exclude=node117,node118
+
+
+module load linuxbrew/colsa
+
+# CPU=$(lscpu | grep CPU\(s\) | head -n1 | awk '{print $2}')
+
+BuildDatabase -name imitator.1.3.6.repeatmodeler_db -engine ncbi imitator.1.3.6.fa
+
+RepeatModeler -database imitator.1.3.6.repeatmodeler_db -pa 40
+```
+
+Repeat Masker code:
+
+```
+#!/bin/bash
+#SBATCH --partition=macmanes,shared
+#SBATCH -J repeatmask
+#SBATCH --output repeatmask_imi2.log
+#SBATCH --cpus-per-task=40
+#SBATCH --exclude=node117,node118
+
+module load linuxbrew/colsa
+
+mkdir repeatmask_postModeler
+cd repeatmask_postModeler
+PATH=/mnt/lustre/macmaneslab/macmanes/ncbi-blast-2.7.1+/bin:$PATH
+export AUGUSTUS_CONFIG_PATH=/mnt/lustre/macmaneslab/shared/augustus_config/config
+
+
+# input requires two fasta files. 1) the masked fasta file from RepeatMasker; 2) the genome assembly
+
+RepeatMasker -pa 40 -gff -lib /mnt/lustre/macmaneslab/ams1236/imitator_genome/consensi.fa.classified -q /mnt/lustre/macmaneslab/ams1236/imitator_genome/imitator.1.3.6.fa
+```
