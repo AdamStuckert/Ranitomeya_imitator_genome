@@ -11,23 +11,22 @@
 ### Inputs: path the genome fasta, path to genome gff file, 
 ## Note: if files are not gzipped the "--readFilesCommand zcat" flag in STAR needs to be changed.
 
-DIR=$(pwd)
-#GENOME=$1
-#GFF=$2
-#READ_DIR=$3
-#SUFFIX=$4
-
 # parse input
+DIR=$(pwd)
+GENOME=$1
+GFF=$2
+READ_DIR=$3
+SUFFIX=$4
 
-while getopts g:f:d:s: flag
-do
-    case "${flag}" in
-        -g) GENOME=${OPTARG};;
-        -f) GFF=${OPTARG};;
-        -d) READ_DIR=${OPTARG};;
-        -s) SUFFIX=${OPTARG};; 
-    esac
-done 
+#while getopts g:f:d:s: flag
+#do
+#    case "${flag}" in
+#        -g) GENOME=${OPTARG};;
+#        -f) GFF=${OPTARG};;
+#        -d) READ_DIR=${OPTARG};;
+#        -s) SUFFIX=${OPTARG};; 
+#    esac
+#done 
 echo "Genome: $GENOME"
 echo "gff: $GFF"
 echo "Reads directory: $READ_DIR"
