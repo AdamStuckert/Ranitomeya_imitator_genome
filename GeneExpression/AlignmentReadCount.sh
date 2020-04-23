@@ -4,7 +4,7 @@
 #SBATCH --mem 110Gb
 #SBATCH --open-mode=append
 #SBATCH --exclude=node117,node118
-#SBATCH --output star-htseq.log
+#SBATCH --output AlignmentReadCount.log
 
 
 #### Purpose: align reads to a genome and count them
