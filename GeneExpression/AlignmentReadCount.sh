@@ -27,7 +27,7 @@ do
         -d) READ_DIR=${OPTARG};;
         -s) SUFFIX=${OPTARG};; 
     esac
-done
+done 
 echo "Genome: $GENOME"
 echo "gff: $GFF"
 echo "Reads directory: $READ_DIR"
