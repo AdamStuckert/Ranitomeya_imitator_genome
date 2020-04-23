@@ -11,11 +11,27 @@
 ### Inputs: path the genome fasta, path to genome gff file, 
 ## Note: if files are not gzipped the "--readFilesCommand zcat" flag in STAR needs to be changed.
 
-DIR=$(pwd)
-GENOME=$1
-GFF=$2
-READ_DIR=$3
-SUFFIX=$4
+#DIR=$(pwd)
+#GENOME=$1
+#GFF=$2
+#READ_DIR=$3
+#SUFFIX=$4
+
+# parse input
+while [ $4 -gt 0 ]
+do
+    case "${flag}" in
+        -g | --genome) GENOME="$2" ;;
+        -f | --gff) GFF="$2" ;;
+        -d | --reads_dir) READ_DIR="$2" ;;
+        -s| --reads_suffix)  SUFFIX="$2" ;; 
+    esac
+    shift
+done
+echo "Genome: $GENOME"
+echo "gff: $GFF"
+echo "Reads directory: $READ_DIR"
+echo "Reads suffix: $SUFFIX"
 
 # make a directory for star genome index
 mkdir $DIR/STAR_index
