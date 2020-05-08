@@ -238,7 +238,7 @@ The arrival of our Hi-C data is imminent. Rather than continuing to incrementall
 
 ### Update from the pandemic 
 
-I'm beginning to think that our Hi-C data will never materialize. Thanks coronavirus! We are moving forward without the Hi-C data. I will run Maker to annotate the genome, as well as run BUSCO against the new version of the database/software. I've done some preliminary tests that indicate that running Maker alone to annotate will have issues due to repeat regions. So I'm running Maker twice: once as is and once after running Repeat Modeler and Repeat Masker.
+I'm beginning to think that our Hi-C data will never materialize. Thanks coronavirus! We are moving forward without the Hi-C data. I will run Maker to annotate the genome, as well as run BUSCO against the new version of the database/software. I've done some preliminary tests that indicate that running Maker alone to annotate will have issues due to repeat regions. So I'm running Maker thrice: once without transcript evidence, once with transcript evidence, and finally once with transcript evidence after running Repeat Modeler and Repeat Masker.
 
 Stand alone Maker code is currently in the Maker directory. 
 
@@ -284,3 +284,11 @@ export AUGUSTUS_CONFIG_PATH=/mnt/lustre/macmaneslab/shared/augustus_config/confi
 
 RepeatMasker -pa 40 -gff -lib /mnt/lustre/macmaneslab/ams1236/imitator_genome/consensi.fa.classified -q /mnt/lustre/macmaneslab/ams1236/imitator_genome/imitator.1.3.6.fa
 ```
+
+I checked the annotations with a few quality metrics. Total number of contigs, total unique contigs, number of proteins of unknown function, BUSCO transcriptome score.
+
+Annotation | Total transcripts | Unique transcripts | # unknown proteins  | BUSCO 
+--- | --- | --- | --- | ---
+No transcript evidence | 30803 | 16360 | 1610 |  C:77.7%[S:60.9%,D:16.8%],F:9.4%,M:12.9%,n:3950
+Transcript evidence | 144683 | 108705 | 18051 | C:84.1%[S:65.0%,D:19.1%],F:9.3%,M:6.6%,n:3950
+Transcript evidence + masked | 52336 | 26336 | 16929 | C:82.4%[S:64.1%,D:18.3%],F:10.8%,M:6.8%,n:3950
