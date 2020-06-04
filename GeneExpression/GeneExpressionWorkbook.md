@@ -13,7 +13,8 @@ Since I have already indexed the genome, I'll submit a slightly modified script 
 
 _R fantastica run:
 ```bash
-sbatch AlignmentReadCount.job  \
+# note submitted from: /mnt/lustre/macmaneslab/ams1236/MimicryGeneExpression/test
+sbatch ReadCount.job  \
 /mnt/lustre/macmaneslab/ams1236/imitator_genome/imitator.1.3.6.fa \
 /mnt/lustre/macmaneslab/ams1236/imitator_genome/maker_1.3.6.masked_28April/Ranitomeya_imitator.imitator.1.3.6.gff3 \
 /mnt/lustre/macmaneslab/ams1236/MultispeciesDevSeries/readfiles/fantastica_reads .fq.gz
@@ -21,7 +22,7 @@ sbatch AlignmentReadCount.job  \
 
 _R variabilis_ run:
 ```bash
-sbatch AlignmentReadCount.job  \
+sbatch ReadCount.job  \
 /mnt/lustre/macmaneslab/ams1236/imitator_genome/imitator.1.3.6.fa \
 /mnt/lustre/macmaneslab/ams1236/imitator_genome/maker_1.3.6.masked_28April/Ranitomeya_imitator.imitator.1.3.6.gff3 \
 /mnt/lustre/macmaneslab/ams1236/MultispeciesDevSeries/readfiles/variabilis_reads .fq.gz
