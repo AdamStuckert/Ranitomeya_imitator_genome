@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=macmanes,shared
-#SBATCH --ntasks=24
+#SBATCH --cpus-per-task=40
 #SBATCH --mem 110Gb
 #SBATCH --open-mode=append
 #SBATCH --exclude=node117,node118
@@ -8,15 +8,16 @@
 
 
 #### Purpose: align reads to a genome and count them
-### Inputs: path the genome fasta, path to genome gff file, 
+### Inputs: path the genome fasta, path to genome gff file,
 ## Note: if files are not gzipped the "--readFilesCommand zcat" flag in STAR needs to be changed.
 
-# parse input
 DIR=$(pwd)
 GENOME=$1
 GFF=$2
 READ_DIR=$3
 SUFFIX=$4
+
+# parse input
 
 #while getopts g:f:d:s: flag
 #do
@@ -24,9 +25,9 @@ SUFFIX=$4
 #        -g) GENOME=${OPTARG};;
 #        -f) GFF=${OPTARG};;
 #        -d) READ_DIR=${OPTARG};;
-#        -s) SUFFIX=${OPTARG};; 
+#        -s) SUFFIX=${OPTARG};;
 #    esac
-#done 
+#done
 echo "Genome: $GENOME"
 echo "gff: $GFF"
 echo "Reads directory: $READ_DIR"
@@ -42,7 +43,7 @@ mkdir $DIR/STAR_mapped
 STAR --runMode genomeGenerate \
 --genomeDir $DIR/STAR_index \
 --genomeFastaFiles $GENOME \
---runThreadN 24 \
+--runThreadN 40 \
 --limitGenomeGenerateRAM 70744733397 \
 --sjdbOverhang 149 \
 --genomeChrBinNbits 18 \
@@ -54,8 +55,7 @@ STAR --runMode genomeGenerate \
 #####################
 
 # list all samples to map
-cd $READ_DIR
-samples=$(basename -a $SUFFIX | sed 's/R"$SUFFIX"//g") # this lists each sample identifier without the filename suffix.
+samples=$(basename -a ${READ_DIR}/*1$SUFFIX | sed "s/R1${SUFFIX}//g")
 
 echo Mapping these samples: $samples
 
@@ -71,7 +71,7 @@ STAR --runMode alignReads \
 --outFilterMismatchNmax 10 \
 --quantMode GeneCounts \
 --outFileNamePrefix ${DIR}/STAR_mapped/${sample} \
---outSAMtype BAM Unsorted SortedByCoordinate
+--outSAMtype BAM Unsorted
 done
 
 
@@ -85,6 +85,5 @@ echo Counting genes with htseq-count for these samples: $samples
 
 for sample in $samples
 do
-htseq-count -s no -f bam -t exon -i Parent $DIR/STAR_mapped/${sample}Aligned.sortedByCoord.out.bam $GFF > $DIR/STAR_mapped/${sample}.gene.counts
+htseq-count -s no -f bam -t exon -i Parent $DIR/STAR_mapped/${sample}Aligned.out.bam $GFF > $DIR/STAR_mapped/${sample}gene.counts
 done
-
