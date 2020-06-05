@@ -8,7 +8,7 @@
 
 
 #### Purpose: align reads to a genome and count them
-### Inputs: path the genome fasta, path to genome gff file,
+### Inputs: path the genome fasta, path to genome gff file, path to reads, suffix (everything after the R1/R2)
 ## Note: if files are not gzipped the "--readFilesCommand zcat" flag in STAR needs to be changed.
 
 DIR=$(pwd)
