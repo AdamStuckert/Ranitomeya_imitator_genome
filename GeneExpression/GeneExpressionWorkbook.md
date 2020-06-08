@@ -30,3 +30,25 @@ sbatch --output RNAseqReadCountVariabilis.log ReadCount.job  \
 /mnt/lustre/macmaneslab/ams1236/imitator_genome/maker_1.3.6.masked_28April/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 \
 /mnt/lustre/macmaneslab/ams1236/MultispeciesDevSeries/readfiles/variabilis_reads .fq.gz
 ```
+
+Rename all the populations of imitator reads.
+
+```bash
+for i in $(ls *counts | grep -v "R_"); do mv -- "$i" "R_imitator_$i"; done
+
+#### 
+# Huallaga
+for i in $(ls *H*.counts); do mv -- "$i" "${i/H/striped_}"; done
+
+## Sauce
+for i in $(ls *S*.counts); do mv -- "$i" "${i/S/banded_}"; done
+
+## Tarapoto
+for i in $(ls *T*.counts); do mv -- "$i" "${i/T/spotted_}"; done
+
+## Varadero
+for i in $(ls *V*.counts); do mv -- "$i" "${i/V/redheaded_}"; done
+
+# change - to _
+for i in $(ls R_imitator*); do mv -- "$i" "${i/-/_}"; done 
+```
