@@ -70,3 +70,26 @@ unmapped=$(grep "reads unmapped: too short" $file | cut -f 2)
 printf "%s\t%s\t%s\t%s\t%s\t%s\n" "$sample" "$reads" "$unique" "$multi" "$toomany" "$unmapped" >> mappingdata.tab
 done
 ```
+
+
+Quick test of trimming reads to see how much better STAR does after trimming.
+
+*trimming script here*
+
+For this test, I will just use the reads for which there is a forward and reverse read. I'll rename those trimmed reads so my script works.
+
+```bash
+cd trimmed_reads
+for i in $(ls *1P.fastq.gz); do mv -- "$i" "${i/1P/R1}"; done 
+for i in $(ls *2P.fastq.gz); do mv -- "$i" "${i/2P/R2}"; done 
+for i in $(ls *1P.fq.gz); do mv -- "$i" "${i/1P/R1}"; done  ### do this
+for i in $(ls *2P.fq.gz); do mv -- "$i" "${i/2P/R2}"; done  ### do this
+
+Imitator reads all end in `.fastq.gz`:
+
+```bash
+sbatch --output RNAseqReadCountTrimmedImitator.log ReadCount.job  \
+/mnt/lustre/macmaneslab/ams1236/imitator_genome/imitator.1.3.6.fa \
+/mnt/lustre/macmaneslab/ams1236/imitator_genome/maker_1.3.6.masked_28April/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 \
+/mnt/lustre/macmaneslab/ams1236/MimicryGeneExpression/trimmed_reads .fastq.gz
+```
