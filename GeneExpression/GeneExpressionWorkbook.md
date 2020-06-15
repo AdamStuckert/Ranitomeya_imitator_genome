@@ -74,7 +74,84 @@ done
 
 Quick test of trimming reads to see how much better STAR does after trimming.
 
-*trimming script here*
+Imitator trimming script:
+```bash
+#!/bin/bash
+#SBATCH --partition=macmanes,shared
+#SBATCH --ntasks=24
+#SBATCH --mem 110Gb
+#SBATCH --open-mode=append
+#SBATCH --exclude=node117,node118
+#SBATCH --output trimmomatic.log
+
+DIR=$(pwd)
+
+mkdir $DIR/trimmed_reads
+cd /mnt/lustre/macmaneslab/ams1236/devseries/reads_from_enrique
+
+samples=$(ls *R1.fastq.gz | sed "s/.R1.fastq.gz//g")
+for sample in $samples
+do
+trimmomatic PE -threads 24 \
+-baseout $DIR/trimmed_reads/$sample.fastq.gz $sample.R1.fastq.gz $sample.R2.fastq.gz \
+LEADING:3 TRAILING:3 ILLUMINACLIP:barcodes.fa:2:30:10 MINLEN:25
+done
+```
+
+Fantastica reads:
+
+```bash
+#!/bin/bash
+#SBATCH --partition=macmanes,shared
+#SBATCH --ntasks=24
+#SBATCH --mem 110Gb
+#SBATCH --open-mode=append
+#SBATCH --exclude=node117,node118
+#SBATCH --output trimmomatic.fant.log
+
+DIR=$(pwd)
+
+mkdir $DIR/trimmed_reads
+cd /mnt/lustre/macmaneslab/ams1236/MultispeciesDevSeries/readfiles/fantastica_reads
+
+cp $DIR/barcodes.fa .
+
+samples=$(ls *R1.fq.gz | sed "s/_R1.fq.gz//g")
+for sample in $samples
+do
+printf "Read 1: %s_R1.fq.gz" "$sample"
+trimmomatic PE -threads 24 \
+-baseout $DIR/trimmed_reads/$sample.fq.gz ${sample}_R1.fq.gz ${sample}_R2.fq.gz \
+LEADING:3 TRAILING:3 ILLUMINACLIP:barcodes.fa:2:30:10 MINLEN:25
+done
+```
+
+Variabilis reads:
+```bash
+#!/bin/bash
+#SBATCH --partition=macmanes,shared
+#SBATCH --ntasks=24
+#SBATCH --mem 110Gb
+#SBATCH --open-mode=append
+#SBATCH --exclude=node117,node118
+#SBATCH --output trimmomatic.var.log
+
+DIR=$(pwd)
+
+mkdir $DIR/trimmed_reads
+cd /mnt/lustre/macmaneslab/ams1236/MultispeciesDevSeries/readfiles/variabilis_reads
+
+cp $DIR/barcodes.fa .
+
+samples=$(ls *R1.fq.gz | sed "s/_R1.fq.gz//g")
+for sample in $samples
+do
+printf "Read 1: %s_R1.fq.gz" "$sample"
+trimmomatic PE -threads 24 \
+-baseout $DIR/trimmed_reads/$sample.fq.gz ${sample}_R1.fq.gz ${sample}_R2.fq.gz \
+LEADING:3 TRAILING:3 ILLUMINACLIP:barcodes.fa:2:30:10 MINLEN:25
+done
+```
 
 For this test, I will just use the reads for which there is a forward and reverse read. I'll rename those trimmed reads so my script works.
 
@@ -98,6 +175,26 @@ Variabilis/fantastica reads all end in `.fq.gz`:
 
 ```bash
 sbatch --output RNAseqReadCountTrimmedModels.log ReadCount.job  \
+/mnt/lustre/macmaneslab/ams1236/imitator_genome/imitator.1.3.6.fa \
+/mnt/lustre/macmaneslab/ams1236/imitator_genome/maker_1.3.6.masked_28April/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 \
+/mnt/lustre/macmaneslab/ams1236/MimicryGeneExpression/trimmed_reads .fq.gz
+```
+
+Trimming helped decrease the proportion of reads tossed because they were considered too short by STAR. Now I want to see if a small adjustment in the length requirements will help recover some more reads (without hurting accuracy). 
+
+Imitator reads all end in `.fastq.gz`:
+
+```bash
+sbatch --output RNAseqReadCountTrimmed_50percentlength_Imitator.log ReadCount_50percent_readlength.job  \
+/mnt/lustre/macmaneslab/ams1236/imitator_genome/imitator.1.3.6.fa \
+/mnt/lustre/macmaneslab/ams1236/imitator_genome/maker_1.3.6.masked_28April/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 \
+/mnt/lustre/macmaneslab/ams1236/MimicryGeneExpression/trimmed_reads .fastq.gz
+```
+
+Variabilis/fantastica reads all end in `.fq.gz`:
+
+```bash
+sbatch --output RNAseqReadCountTrimmed_50percentlength_Models.log ReadCount_50percent_readlength.job  \
 /mnt/lustre/macmaneslab/ams1236/imitator_genome/imitator.1.3.6.fa \
 /mnt/lustre/macmaneslab/ams1236/imitator_genome/maker_1.3.6.masked_28April/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 \
 /mnt/lustre/macmaneslab/ams1236/MimicryGeneExpression/trimmed_reads .fq.gz
