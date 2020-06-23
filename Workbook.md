@@ -292,3 +292,30 @@ Annotation | Total transcripts | Unique transcripts | # unknown proteins  | BUSC
 No transcript evidence | 30803 | 16360 | 1610 |  C:77.7%[S:60.9%,D:16.8%],F:9.4%,M:12.9%,n:3950
 Transcript evidence | 144683 | 108705 | 18051 | C:84.1%[S:65.0%,D:19.1%],F:9.3%,M:6.6%,n:3950
 Transcript evidence + masked | 52336 | 26336 | 16929 | C:82.4%[S:64.1%,D:18.3%],F:10.8%,M:6.8%,n:3950
+
+At this point I was able to get my hands on the newest version of the RepBase database (link to website here). This is version `RepBase25.05.2020`. So I downloaded the newest version of RepeatMasker, linked in the newest version of dfam (3.1) and then used the newest RepBase database to rerun RepeatMasker. I concatenated all the RepBase fastas (`cat *ref > RepBase25.05.fasta`) and specified that as the library in Repeat Masker.
+
+```bash
+#!/bin/bash
+#SBATCH --partition=macmanes,shared
+#SBATCH -J repeatmask
+#SBATCH --output repeatmasker.log
+#SBATCH --cpus-per-task=40
+#SBATCH --exclude=node117,node118
+
+module load linuxbrew/colsa
+
+DIR=$(pwd)
+PATH=/mnt/lustre/macmaneslab/macmanes/ncbi-blast-2.7.1+/bin:$PATH
+export AUGUSTUS_CONFIG_PATH=/mnt/lustre/macmaneslab/shared/augustus_config/config
+
+# cp $masked .
+
+mkdir repeatmask_adamsinstall_newRepBaseDB
+cd repeatmask_adamsinstall_newRepBaseDB
+
+which perl
+
+
+$HOME/software/RepeatMasker/RepeatMasker -pa 40 -gff -lib /mnt/lustre/macmaneslab/ams1236/software/RepeatMasker/Libraries/RepBase25.05.fasta  -q ${DIR}/imitator.1.3.6.fa
+```
