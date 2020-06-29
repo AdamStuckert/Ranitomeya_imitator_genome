@@ -324,7 +324,7 @@ This actually produced less informative masking than with just the dfam 3.1 data
 
 Annotation | Total transcripts | Unique transcripts | # unknown proteins  | BUSCO 
 --- | --- | --- | --- | ---
-imitator.1.3.6 repeat modeled, masked, and with transcript evidence | 52325 | 24862 | 16926 |  C:77.7%[S:60.9%,D:16.8%],F:9.4%,M:12.9%,n:3950
+imitator.1.3.6 repeat modeled, masked, and with transcript evidence | 52325 | 24862 | 16926 |  C:82.5%[S:63.9%,D:18.6%],F:10.6%,M:6.9%,n:3950
 
 For clarification, to caluclate "unique transcripts" I used anything that should be considered a unique gene. This means all unknown proteins count as 1, and two transcripts with a top hit to the same gene (eg A1BG Alpha-1B-glycoprotein (Homo sapiens OX=9606) and A1bg Alpha-1B-glycoprotein (Rattus norvegicus OX=10116) would be counted once in total). Code for that:
 
