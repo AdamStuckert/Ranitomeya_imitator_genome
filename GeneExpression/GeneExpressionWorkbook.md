@@ -195,7 +195,27 @@ Variabilis/fantastica reads all end in `.fq.gz`:
 
 ```bash
 sbatch --output RNAseqReadCountTrimmed_50percentlength_Models.log ReadCount_50percent_readlength.job  \
+$HOME/imitator_genome/imitator.1.3.6.fa \
+$HOME/imitator_genome/maker_1.3.6.masked_28April/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 \
+$HOME/MimicryGeneExpression/trimmed_reads .fq.gz
+```
+
+Tests concluded. Rerun with finalized version of the genome.
+
+Imitator reads all end in `.fastq.gz`:
+
+```bash
+sbatch --output FINAL.RNAseqReadCountTrimmed_50percentlength_Imitator.log AlignmentReadCount_50percent_readlength.job  \
+$HOME/imitator_genome/imitator.1.3.6.fa \
+$HOME/imitator_genome/maker_1.3.6.masked_24June/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 \
+$HOME/MimicryGeneExpression/trimmed_reads .fastq.gz
+```
+
+Variabilis/fantastica reads all end in `.fq.gz`:
+
+```bash
+sbatch --output FINAL.RNAseqReadCountTrimmed_50percentlength_Models.log ReadCount_50percent_readlength.job  \
 /mnt/lustre/macmaneslab/ams1236/imitator_genome/imitator.1.3.6.fa \
-/mnt/lustre/macmaneslab/ams1236/imitator_genome/maker_1.3.6.masked_28April/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 \
+/mnt/lustre/macmaneslab/ams1236/imitator_genome/maker_1.3.6.masked_24June/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 \
 /mnt/lustre/macmaneslab/ams1236/MimicryGeneExpression/trimmed_reads .fq.gz
 ```
