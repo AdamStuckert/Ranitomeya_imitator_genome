@@ -14,7 +14,7 @@ This took a while to run, but eventually completed. However, the assembly was sm
 ## Falcon assembly
 This seemed very promising. However, it produced > 16 TB of intermediate files and we hit quota. I aim to resume this eventually, if possible.
 
-*A note from future Adam:* He never resumed this, despite his desire to.
+**A note from future Adam:** He never resumed this, despite his desire to.
 
 ## Masurca assembly
 This ran for about 35 days, was making almost no progress, and so I eventually gave up after reaching quota issues due to the Falcon assembly.
