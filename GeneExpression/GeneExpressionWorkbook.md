@@ -219,3 +219,5 @@ sbatch --output FINAL.RNAseqReadCountTrimmed_50percentlength_Models.log ReadCoun
 /mnt/lustre/macmaneslab/ams1236/imitator_genome/maker_1.3.6.masked_24June/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 \
 /mnt/lustre/macmaneslab/ams1236/MimicryGeneExpression/trimmed_reads .fq.gz
 ```
+
+Following this, read counts were downloaded to a local machine and differential expression analyses and weighted gene coexpression network analyses (WCGNA) were conducted. Those are R scripts here.
