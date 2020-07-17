@@ -1,0 +1,1289 @@
+---
+title: "MimeticGeneExpression"
+author: "Adam Stuckert"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+### Setup
+
+```{r global_options, include=FALSE}
+# load packages required for analyses
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+library(tximport)
+library(DESeq2)
+library(dplyr)
+library(foreach)
+library(data.table)
+library(splines)
+library(ggthemes)
+library(scales)
+library(gridExtra)
+library(tidyr)
+library(pheatmap)
+library(RColorBrewer)
+library(ggplot2)
+library("BiocParallel")
+register(SnowParam(8))
+library(apeglm)
+library(tidyverse)
+library(topGO)
+library(GO.db)
+dir.create("figures")
+dir.create("figures4publication")
+dir.create("results")
+dir.create("results/DEresults")
+dir.create("results/GOresults")
+dir.create("results/WGCNAresults")
+```
+
+Some functions for this analysis.
+
+```{r adam's fancy functions}
+
+# this first function runs a Walds test between specified groups, then returns a dataframe from it.
+getDEdf <- function(dds, treatment, group1, group2){
+  res <- results(dds, contrast = c(treatment, group1, group2))
+  res.df <- setDT(as.data.frame(res), keep.rownames = "transcript")
+  # add gene annotation information
+  res.df <- dplyr::left_join(res.df, annos, by = "transcript")
+  return(res.df)
+}
+
+# this function pulls out particular a priori genes of interest into a new data frame
+aprioris <- function(df, annos){
+  df.aprioris <- data.frame()
+  for (i in 1:length(colors$gene_name)){
+    searchterm <- paste0("\\b", colors$gene_name[i], "\\b")
+    searchterm <- tolower(searchterm)
+    tmp <- df %>% filter(str_detect(Gene, searchterm))
+    df.aprioris <- rbind(df.aprioris, tmp)
+}
+   return(df.aprioris)
+}
+
+# this function extracts all genes below a specified alpha value, prints the number of DE genes to screen, and saves a spreadsheet to file
+siggies <- function(df, alpha, csv){
+  sigs <- df %>% filter(padj < alpha)
+  print(paste0("Number of significant genes: ", length(sigs$padj)))
+  write.csv(sigs, csv, row.names = FALSE)
+  return(sigs)
+}
+
+
+# significant gene wrapper function
+SigGeneWrapper <- function(model_output, alpha, comparison){
+  print(paste0("Running ", comparison, " with alpha = ", alpha))
+  df <- setDT(as.data.frame(model_output), keep.rownames = "Gene")
+  # add annotation data
+  #df1 <- dplyr::left_join(df, annos, by = "transcript") 
+  # get significant genes
+  print("Overall significant genes")
+  sigs <- siggies(df, alpha, paste0("results/", comparison, "_genes.csv"))
+  # add annotation data
+  colordf <- aprioris(df, annos)
+  #get significant color genes
+  print("Significant color genes")
+  color.sigs <- siggies(colordf, alpha, paste0("results/", comparison, "_colorgenes.csv"))
+}
+
+# Define ggplot aesthetic.
+
+mytheme <- theme_classic() + theme(axis.text=element_text(size=20), 
+        axis.title=element_text(size=22,face="bold"), 
+        plot.title = element_text(size = 22, hjust = 0.5), strip.text.x = element_text(size = 22),
+        panel.border = element_rect(color = "black", fill = NA, size = 1), legend.position = "none")
+
+
+### Functions for plotting
+
+# pull in DE genes that were saved as .csvs
+DEgenes <- function(comparison, aretheycolors){
+  genes <- read.csv(paste0("results/", comparison, "_", aretheycolors, ".csv"))
+  #genes <- unique(tmp$Gene)
+  return(genes)
+}
+
+#### extract the data from the DESeq models
+#  requires a trycatch for the plotcounts function
+trycatch_plotCounts = function(dds, target) {
+   tryCatch(plotCounts(dds, gene = target, intgroup = c("morph", "age_weeks"), returnData = TRUE, xlab="treatment"),
+            warning = function(w) {},
+            error = function(e) {print("transcript missing")}) 
+}
+
+# genes = list of genes
+# dds = deseq2 object
+# annos = transcript 2 gene name df
+# sampledata = sample ... data ...
+extractTadCounts <- function(genes, dds, annos, sampledata){
+  # make gene a character
+  genes$Gene <- as.character(genes$Gene)
+  #### for loop to extract counts
+  # make empty data frame
+  countdf <- data.frame()
+  for (i in 1:nrow(genes)){
+    #target <- as.character(genes$transcript[i])
+    gene <- genes$Gene[i]
+    #print(target)
+    print(gene)
+    # pull out count data
+    tmp <- trycatch_plotCounts(dds, gene)
+    if (tmp == "transcript missing") {
+      rm(tmp) 
+    } else {
+     # make rownames a column
+    tmp <- setDT(tmp, keep.rownames = TRUE)
+    # change name of new first column
+    colnames(tmp)[1] <- "sample"
+    # add gene name to a column
+    tmp$Gene <- gene
+    # add transcript id to a column
+    #tmp$transcript<- target
+    # add all to a data frame
+    countdf <- rbind(countdf, tmp)     
+    } # end of if statement
+    } # end of loop
+
+  # add a column for species
+  #colnames(countdf)[1] <- "Name"
+  info <- sampledata[,c("sample","species")]
+  countdf <- dplyr::left_join(countdf, info, by = "sample")
+
+  return(countdf)
+}
+
+extractCounts <- function(genes, dds, annos, sampledata){
+  # gene2tx <- annos[annos$Gene %in% genes, ]
+  #### for loop to extract counts
+  # make empty data frame
+  countdf <- data.frame()
+  for (i in 1:length(genes)){
+    genes <- as.character(genes)
+    gene <- genes[i]
+    #gene_symbol <- genes$gene_symbol[i]
+    #print(target)
+    print(gene)
+    # pull out count data
+    tmp <- trycatch_plotCounts(dds, gene)
+    if (tmp == "transcript missing") {
+      rm(tmp) 
+    } else {
+     # make rownames a column
+    tmp <- setDT(tmp, keep.rownames = TRUE)
+    # change name of new first column
+    colnames(tmp)[1] <- "sample"
+    # add gene name to a column
+    tmp$Gene <- gene
+    # add transcript id to a column
+    #tmp$transcript<- target
+    # add gene symbol to a column
+    #tmp$gene_symbol <- gene_symbol
+    # add all to a data frame
+    countdf <- rbind(countdf, tmp)     
+    } # end of if statement
+    } # end of loop
+
+  # add a column for species
+  #colnames(countdf)[1] <- "Name"
+  info <- sampledata[,c("sample","species")]
+  countdf <- dplyr::left_join(countdf, info, by = "sample")
+
+  return(countdf)
+}
+
+# plot expression. This is for each species individually, and will plot all the genes in a dataframe
+plotGenestime <- function(df, dir){
+  dir.create(dir)
+  genes <- unique(df$Gene)
+
+  for (i in 1:length(genes)){
+    ith_gene <- genes[i]
+    #gene <- df$Gene[i]
+    #gene_df <- df[,i]
+    gene_df <- df %>% filter(Gene == ith_gene)
+    gene <- gene_df$Gene[1]
+    # remove problematic characters that break the script
+    gene <- gsub(pattern = "/", replacement = " ", gene)
+    gene <- gsub(pattern = ":", replacement = " ", gene)
+    # this is a test...
+    gene <- gsub(pattern = "\\s\\(.*\\)$", replacement = "", gene)
+    print(gene)
+    
+    ggplot(gene_df,  aes(x = age_weeks, y = count)) + 
+      ggtitle(gene,  subtitle = "")  + 
+      ylab("Normalized Counts") + 
+      xlab("Age (weeks)") +
+      geom_boxplot(outlier.shape = NA, lwd=.75, aes(fill = age_weeks)) + 
+      facet_grid(. ~ morph) +
+      mytheme
+  
+    ggsave(paste0(dir, "/", gene, ".png"), width = 11.38, height = 4.37)
+  }
+}
+
+# extract the transcript ids from a list of genes. Supply gene names + annotation document
+targetedgenes <- function(genes, annos){
+  df.targetedgenes <- data.frame()
+  for (i in 1:length(genes)){
+    searchterm <- paste0("\\b", genes[i], "\\b")
+    searchterm <- tolower(searchterm)
+    tmp <- annos %>% filter(str_detect(Gene, searchterm))
+    tmp$gene_symbol <- genes[i]
+    df.targetedgenes <- rbind(df.targetedgenes, tmp)
+}
+   return(df.targetedgenes)
+}
+```
+
+
+Print R environment information:
+
+```{R session info}
+sessionInfo()
+```
+
+### Data import
+
+Create sample spreadsheet.
+
+```{r create spreadsheet, eval = F}
+### List all samples from expression data 
+# get the directory/path for each sample in this study
+base_dir <- getwd()
+# get directories
+filename <- list.files(path = "data/", pattern = "gene.counts", full.names = F, recursive = F)
+# append full file path to each sample id
+files <- file.path(base_dir, "data/", filenames) # files = directory + salmon directory + sample name + quantifictaion file name
+names(files) <- "data/"
+all(file.exists(files)) # do these all actually exist?
+
+# Make sample spreadsheet 
+samples <- as.data.frame(filename)
+# get sample
+samples$sample <- filenames  %>% gsub(pattern = ".gene.counts", replacement = "")
+
+
+# get species
+samples$species <- samples$sample %>% gsub(pattern = "", replacement = "") %>% gsub(pattern = "_\\D*$", replacement = "")
+# get population/morph
+samples$morph <- filenames %>% gsub(pattern = "2017_", replacement = "") %>% 
+  gsub(pattern = ".gene.counts", replacement = "") %>%
+  gsub(pattern = "^.*_", replacement = "") 
+
+
+# save as spreadsheet
+dir.create("results")
+#write.csv(samples, "results/samplespreadsheet.csv", row.names = F)
+
+# make spreadsheet for deseq
+deseqsamples <- samples[,-1]
+
+```
+
+Import expression data form STAR/htseq-count. Each individual is a table.
+
+```{r import expression data}
+## Import annotation documents 
+annos <- fread("data/Ranitomeya_imitator.imitator.1.3.6.annotations.genesymbol.tsv", header = FALSE)
+
+# rename columns from annos file
+colnames(annos) <- c("transcript", "Gene")
+
+# make all gene names lower case for exact matching
+annos$Gene <- tolower(annos$Gene)
+
+# make spreadsheet for deseq
+samples <- read.csv("samplespreadsheet.csv")
+filenames <- samples[,1]
+
+# make age a factor
+samples$age_weeks <- as.factor(samples$age_weeks)
+
+# import data
+countdata <- data.frame(annos$transcript)
+colnames(countdata) <- "transcript"
+for (counts in (1:length(samples$filename))){
+  # import data for that sample
+  toimport <- samples$filename[counts]
+  tmpdata <- read.table(paste0("data/", toimport), header = FALSE, sep = "\t")
+  # sample id
+  samplename <- toimport  %>% gsub(pattern = ".gene.counts", replacement = "")
+  colnames(tmpdata) <- c("transcript", samplename)
+  countdata <- dplyr::left_join(countdata, tmpdata, by = "transcript")
+  }
+
+dim(countdata)
+
+countdata <- data.frame(countdata, row.names = 1)
+```
+
+
+Import _a priori_ candidate color genes.
+
+```{R import color genes}
+
+colors <- read.csv("data/color_genes.csv", header = TRUE)
+colnames(colors) <- "gene_name"
+
+# make all the color gene names lower case for exact matching
+colors$gene_name <- tolower(colors$gene_name)
+```
+
+
+
+Quick data control. Change any "NA" values to "0". Also remove any row with total expression < 50 (or 1 count/every 3rd sample).
+
+```{r data QC}
+# change all NA to 0
+print(paste("Number of NA after import:", sum(is.na(countdata))))
+countdata[is.na(countdata)] <-  0
+print(paste("Number of NA after NA removal:", sum(is.na(countdata))))
+
+# remove any row with total expression < 10
+print(paste("Number of genes after import:", nrow(countdata)))
+keep <- rowSums(countdata) >= 50
+countdata <- countdata[keep,]
+print(paste("Number of genes after filtering by total expression:", nrow(countdata)))
+
+# remove all unknown proteins
+#countdata <- countdata[!rownames(countdata) == "Protein of unknown function", ]
+#print(paste("Number of genes after removing all 'Proteins of unknown function':", nrow(countdata)))
+```
+
+The count data table is currently a dataframe of counts, with each row representing a transcript in the genome. Some genes are represented by multiple transcripts in the genome, and hence our count data table. Here I will manipulate the data so that we can do a gene level analysis.
+
+```{R Create a data frame of gene level count data}
+# make rownames column 1
+countdata <- setDT(countdata, keep.rownames = "transcript")[]
+
+# add gene symbol
+countdata2 <- dplyr::left_join(annos, countdata, by = "transcript")
+
+# change all NA to 0
+print(paste("Number of NA after import:", sum(is.na(countdata2))))
+countdata2[is.na(countdata2)] <-  0
+print(paste("Number of NA after NA removal:", sum(is.na(countdata2))))
+
+# combine all counts that map to the same gene
+countdata3 <- aggregate(countdata2[, 3:116], list(countdata2$Gene), sum)
+countdata3[is.na(countdata3)] <-  0
+colnames(countdata3)[1] <- "Gene"
+countdata <- countdata3
+
+
+# make gene name row column
+countdata <- data.frame(countdata, row.names = 1)
+
+# remove any row with total expression < 50
+print(paste("Number of genes after import:", nrow(countdata)))
+keep <- rowSums(countdata) >= 50
+countdata <- countdata[keep,]
+print(paste("Number of genes after filtering by total expression:", nrow(countdata)))
+
+
+# save gene-level count data
+write.table(countdata, "data/gene.level.count.data.tsv", row.names = TRUE, sep = "\t")
+```
+
+
+
+### DESeq data creation 
+
+```{r DESEQ creation}
+# create DESeq dataset
+dds <- DESeqDataSetFromMatrix(countData = countdata,
+                                       colData = samples,
+                                       design = ~ species + morph + age_weeks)
+
+```
+
+
+### Create a PCA
+
+```{R PCA}
+vsd <- vst(dds, blind = FALSE)
+
+# get PC1 and PC2 data
+pcaData <- plotPCA(vsd, intgroup = c("species", "morph", "age_weeks"), returnData = TRUE)
+
+# get percent variation
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+# pca code
+ggplot(pcaData, aes(x = PC1, y = PC2, color = morph, shape = age_weeks)) +
+  stat_ellipse(aes(group = species), type = "t", level = 0.95, size = 1.25, show.legend = FALSE) + geom_point(size = 3, show.legend = TRUE) + 
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  coord_fixed() + theme_bw() #+
+
+# save
+ggsave("figures/PCA.png", width = 8, height = 4.6, dpi = 600)
+
+
+# pca code
+ggplot(pcaData, aes(x = PC1, y = PC2, color = morph, shape = species)) +
+  stat_ellipse(aes(group = species), type = "t", level = 0.95, size = 1.25, show.legend = FALSE) + geom_point(size = 3, show.legend = TRUE) + 
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  coord_fixed() + theme_bw() #+
+
+# save
+ggsave("figures/speciesPCA.png", width = 8, height = 4.6, dpi = 600)
+```
+
+### Make the final PCA for the publication
+
+```{R PCA for publication}
+# make sure levels of morphs are correctly specified for colors
+
+# pca code
+ggplot(pcaData, aes(x = PC1, y = PC2, color = morph, shape = age_weeks)) +
+  stat_ellipse(aes(group = species, linetype = species), type = "t", level = 0.95, size = 1.25, show.legend = FALSE) +
+  scale_linetype_manual(values=c("twodash", "longdash", "solid"), guide = FALSE) +
+  geom_point(size = 3, show.legend = TRUE) + 
+  scale_color_manual(values = c("orange1", "red1", "yellow2", "chartreuse4")) +
+  scale_shape_manual(values = c(8,9,15,16,10,17,18,11,13)) + 
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  coord_fixed() + theme_bw() +
+  guides(shape = guide_legend(order = 1),
+  color = guide_legend(order = 2)) + 
+  annotate("text", label = "Ranitomeya fantastica", x = 45, y = -22.5, size = 4, colour = "black", fontface = "italic") +
+  annotate("text", label = "Ranitomeya imitator", x = 38, y = 22, size = 4, colour = "black", fontface = "italic") +
+  annotate("text", label = "Ranitomeya variabilis", x = -45, y = 12, size = 4, colour = "black", fontface = "italic") 
+  
+
+# save
+#ggsave("figures/MultispeciesPCA.pdf", width = 7.63, height = 7.63, dpi = 400)
+ggsave("figures4publication/PCA.png", width = 8, height = 4.6, dpi = 600)
+
+```
+
+
+### Create a heatmap
+
+Make a heatmap with rows/columns ordered by populations then time?
+
+```{r HEATWAVE, eval = FALSE}
+# create sample distances and sample distance matrix
+sampleDists <- dist(t(assay(vsd)))
+sampleDistMatrix <- as.matrix( sampleDists )
+# rename columns/rows so they are interpretable
+#rownames(sampleDistMatrix) <- gsub(pattern = "_M.*$", replacement = "", rownames(sampleDistMatrix))
+#colnames(sampleDistMatrix) <- gsub(pattern = "_M.*$", replacement = "", colnames(sampleDistMatrix))
+# plot heatmap
+heatmapcolors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix, cluster_rows = FALSE, cluster_cols = FALSE, col = heatmapcolors)
+# plot and save heatmap
+png("figures/heatmap.png", width = 14.63, height = 10, units = "in", res = 600)
+pheatmap(sampleDistMatrix, cluster_rows = FALSE, cluster_cols = FALSE, col = heatmapcolors)
+dev.off()
+```
+
+For some reason this is saving an empty png with no error message. Fix later.
+
+
+
+### Differential expression analyses
+
+I will run some differential expression analyses now. I want to account for species, morph, and time point in my analyses.
+
+
+Run differential expression analysis. What is the effect of color morph?
+
+```{r LRT color morph, eval = FALSE}
+
+ddsmorph <- DESeqDataSetFromMatrix(countData = countdata,
+                                       colData = samples,
+                                       design = ~ species + age_weeks + morph)
+
+# run LRT test
+ddsmorph <- DESeq(ddsmorph, test="LRT", reduced = ~ species + age_weeks, parallel=TRUE, BPPARAM=SnowParam(8))
+resmorph <- results(ddsmorph, parallel=TRUE, BPPARAM=SnowParam(8))
+resmorph$transcript <- mcols(resmorph)$transcript
+
+# how many are "significant"?
+table(resmorph[,"padj"] < 0.05)
+
+```
+
+
+
+```{r LRT timepoint, eval = FALSE}
+
+ddsage <- DESeqDataSetFromMatrix(countData = countdata,
+                                       colData = samples,
+                                       design = ~ species + morph + age_weeks)
+
+# run LRT test
+ddsage <- DESeq(ddsage, test="LRT", reduced = ~ species + morph, parallel=TRUE, BPPARAM=SnowParam(8))
+resage <- results(ddsage, parallel=TRUE, BPPARAM=SnowParam(8))
+resage$symbol <- mcols(resage)$symbol
+
+# how many are "significant"?
+table(resage[,"padj"] < 0.05)
+
+```
+
+
+
+```{r LRT species, eval = FALSE}
+
+ddsspecies <- DESeqDataSetFromMatrix(countData = countdata,
+                                       colData = samples,
+                                       design = ~ morph + age_weeks + species)
+
+# run LRT test
+ddsspecies <- DESeq(ddsspecies, test="LRT", reduced = ~ morph + age_weeks, parallel=TRUE, BPPARAM=SnowParam(8))
+resspecies <- results(ddsspecies, parallel=TRUE, BPPARAM=SnowParam(8))
+resspecies$symbol <- mcols(resspecies)$symbol
+
+# how many are "significant"?
+table(resspecies[,"padj"] < 0.05)
+```
+
+### Color genes 
+
+
+```{r DE color genes by morph, eval = FALSE}
+
+SigGeneWrapper(resmorph, 0.05, "morphs")
+
+```
+
+```{r DE color genes by timepoint, eval = FALSE}
+
+SigGeneWrapper(resage, 0.05, "timepoint")
+
+```
+
+```{r DE color genes by species, eval = FALSE}
+
+SigGeneWrapper(resspecies, 0.05, "species")
+
+```
+
+
+Now I will run these tests for each species independently. Because this was multiple projects that occurred at multiple times, there are surely batch effects that aren't accounted for. And I can't easily account for batches in this current framework because it would produce a model that is not full rank (i.e., there are lanes that only ran imitator, and the rest only ran fantastica/variabilis).
+
+
+
+### *R imitator* DE genes by morph
+
+Extract only imitator data.
+
+```{r imitator data}
+imicountdata <- dplyr::select(countdata, contains("R_imitator"))
+imisamples <-samples %>% filter(species == "R_imitator") 
+```
+
+Run differential expression analysis. What is the effect of color morph?
+
+```{r LRT color morph}
+
+imiddsmorph <- DESeqDataSetFromMatrix(countData = imicountdata,
+                                       colData = imisamples,
+                                       design = ~ lane + age_weeks  + morph)
+
+# run LRT test
+imiddsmorph <- DESeq(imiddsmorph, test="LRT", reduced = ~ lane + age_weeks, parallel=TRUE, BPPARAM=SnowParam(8))
+imiresmorph <- results(imiddsmorph, parallel=TRUE, BPPARAM=SnowParam(8))
+imiresmorph$transcript <- mcols(imiresmorph)$transcript
+
+# how many are "significant"?
+table(imiresmorph[,"padj"] < 0.05)
+
+SigGeneWrapper(imiresmorph, 0.01, "imitator_morphs")
+
+```
+
+
+### *R fantastica* DE genes by morph
+
+Extract only fantastica data.
+
+```{r imitator data}
+fantcountdata <- dplyr::select(countdata, contains("R_fantastica"))
+fantsamples <-samples %>% filter(species == "R_fantastica") 
+```
+
+Run differential expression analysis. What is the effect of color morph?
+
+```{r LRT color morph}
+
+fantddsmorph <- DESeqDataSetFromMatrix(countData = fantcountdata,
+                                       colData = fantsamples,
+                                       design = ~ lane + age_weeks + morph)
+
+# run LRT test
+fantddsmorph <- DESeq(fantddsmorph, test="LRT", reduced = ~ lane + age_weeks, parallel=TRUE, BPPARAM=SnowParam(8))
+fantresmorph <- results(fantddsmorph, parallel=TRUE, BPPARAM=SnowParam(8))
+fantresmorph$transcript <- mcols(fantresmorph)$transcript
+
+# how many are "significant"?
+table(fantresmorph[,"padj"] < 0.05)
+
+SigGeneWrapper(fantresmorph, 0.01 , "fantastica_morphs")
+
+```
+
+
+### *R variabilis* DE genes by morph
+
+Extract only variabilis data.
+
+```{r variabilis data}
+varcountdata <- dplyr::select(countdata, contains("R_variabilis"))
+varsamples <-samples %>% filter(species == "R_variabilis") 
+```
+
+Run differential expression analysis. What is the effect of color morph?
+
+```{r LRT color morph}
+
+varddsmorph <- DESeqDataSetFromMatrix(countData = varcountdata,
+                                       colData = varsamples,
+                                       design = ~ lane + age_weeks + morph)
+
+# run LRT test
+varddsmorph <- DESeq(varddsmorph, test="LRT", reduced = ~ lane + age_weeks, parallel=TRUE, BPPARAM=SnowParam(8))
+varresmorph <- results(varddsmorph, parallel=TRUE, BPPARAM=SnowParam(8))
+varresmorph$transcript <- mcols(varresmorph)$transcript
+
+# how many are "significant"?
+table(varresmorph[,"padj"] < 0.05)
+
+SigGeneWrapper(varresmorph, 0.01, "variabilis_morphs")
+
+```
+
+#### Table of DE genes by morph
+
+```{r Table of DE genes by morph}
+
+imi.morph.genes <- DEgenes("imitator_morphs", "colorgenes")
+fant.morph.genes <- DEgenes("fantastica_morphs", "colorgenes")
+var.morph.genes <- DEgenes("variabilis_morphs", "colorgenes")
+
+morphgenes <- unique(sort(c(levels(imi.morph.genes$Gene), levels(fant.morph.genes$Gene), levels(var.morph.genes$Gene))))
+morphgenes <- as.data.frame(morphgenes)
+colnames(morphgenes) <- "Gene"
+
+# add an X to each dataframe
+imi.morph.genes$imitator_morphs <- "X"
+fant.morph.genes$fantastica_morphs <- "X"
+var.morph.genes$variabilis_morphs <- "X"
+
+# merge into a table
+morphgenes <- left_join(morphgenes, imi.morph.genes, by = "Gene")
+morphgenes <- left_join(morphgenes, fant.morph.genes, by = "Gene")
+morphgenes <- left_join(morphgenes, var.morph.genes, by = "Gene")
+
+# get only Gene and morphs columns
+morphgenes <- dplyr::select(morphgenes, Gene, contains("morphs"))
+
+# Get only unique rows
+morphgenes <- morphgenes[!duplicated(morphgenes),]
+
+# save results
+write.table(morphgenes, "results/ColorGenesByMorph_alpha0.01.tsv", sep = "\t", row.names = FALSE, na = "")
+```
+
+
+##### DE genes by developmental age
+
+### *R imitator* DE genes by age
+
+Run differential expression analysis. What is the effect of tadpole age?
+
+```{r LRT age}
+
+imiddsstage <- DESeqDataSetFromMatrix(countData = imicountdata,
+                                       colData = imisamples,
+                                       design = ~ lane + morph + age_weeks)
+
+# run LRT test
+imiddsstage <- DESeq(imiddsstage, test="LRT", reduced = ~ lane + morph, parallel=TRUE, BPPARAM=SnowParam(8))
+imiresstage <- results(imiddsstage, parallel=TRUE, BPPARAM=SnowParam(8))
+imiresstage$transcript <- mcols(imiresstage)$transcript
+
+# how many are "significant"?
+table(imiresstage[,"padj"] < 0.05)
+
+SigGeneWrapper(imiresstage, 0.01, "imitator_developmentalstage")
+
+```
+
+
+### *R fantastica* DE genes by stage
+
+Run differential expression analysis. What is the effect of stage?
+
+```{r LRT stage}
+
+fantddsstage <- DESeqDataSetFromMatrix(countData = fantcountdata,
+                                       colData = fantsamples,
+                                       design = ~ lane + morph + age_weeks)
+
+# run LRT test
+fantddsstage <- DESeq(fantddsstage, test="LRT", reduced = ~ lane + morph, parallel=TRUE, BPPARAM=SnowParam(8))
+fantresstage <- results(fantddsstage, parallel=TRUE, BPPARAM=SnowParam(8))
+fantresstage$transcript <- mcols(fantresstage)$transcript
+
+# how many are "significant"?
+table(fantresstage[,"padj"] < 0.05)
+
+SigGeneWrapper(fantresstage, 0.01, "fantastica_developmentalstage")
+
+```
+
+
+### *R variabilis* DE genes by stage
+
+Run differential expression analysis. What is the effect of stage?
+
+```{r LRT stage}
+
+varddsstage <- DESeqDataSetFromMatrix(countData = varcountdata,
+                                       colData = varsamples,
+                                       design = ~ lane  + morph + age_weeks)
+
+# run LRT test
+varddsstage <- DESeq(varddsstage, test="LRT", reduced = ~ lane + morph, parallel=TRUE, BPPARAM=SnowParam(8))
+varresstage <- results(varddsstage, parallel=TRUE, BPPARAM=SnowParam(8))
+varresstage$transcript <- mcols(varresstage)$transcript
+
+# how many are "significant"?
+table(varresstage[,"padj"] < 0.05)
+
+SigGeneWrapper(varresstage, 0.01, "variabilis_developmentalstage")
+
+```
+
+#### Table of DE genes by developmental stage
+
+```{r Table of DE genes by developmental stage}
+
+imi.stage.genes <- DEgenes("imitator_developmentalstage", "colorgenes")
+fant.stage.genes <- DEgenes("fantastica_developmentalstage", "colorgenes")
+var.stage.genes <- DEgenes("variabilis_developmentalstage", "colorgenes")
+
+stagegenes <- unique(sort(c(levels(imi.stage.genes$Gene), levels(fant.stage.genes$Gene), levels(var.stage.genes$Gene))))
+stagegenes <- as.data.frame(stagegenes)
+colnames(stagegenes) <- "Gene"
+
+# add an X to each dataframe
+imi.stage.genes$imitator_stages <- "X"
+fant.stage.genes$fantastica_stages <- "X"
+var.stage.genes$variabilis_stages <- "X"
+
+# merge into a table
+stagegenes <- left_join(stagegenes, imi.stage.genes, by = "Gene")
+stagegenes <- left_join(stagegenes, fant.stage.genes, by = "Gene")
+stagegenes <- left_join(stagegenes, var.stage.genes, by = "Gene")
+
+# get only Gene and stages columns
+stagegenes <- dplyr::select(stagegenes, Gene, contains("stages"))
+
+# Get only unique rows
+stagegenes <- stagegenes[!duplicated(stagegenes),]
+
+# save results
+write.table(stagegenes, "results/ColorGenesByDevelopmentalStage_alpha0.01.tsv", sep = "\t", row.names = FALSE, na =)
+```
+
+
+#### Table of all DE genes
+
+```{r Table of all DE genes}
+
+allDEgenes <- unique(sort(c(levels(as.factor(morphgenes$Gene)), levels(as.factor(stagegenes$Gene)))))
+allDEgenes <- as.data.frame(allDEgenes)
+colnames(allDEgenes) <- "Gene"
+
+# merge into a table
+allDEgenes <- left_join(allDEgenes, morphgenes, by = "Gene")
+allDEgenes <- left_join(allDEgenes, stagegenes, by = "Gene")
+
+# Get only unique rows
+allDEgenes <- allDEgenes[!duplicated(allDEgenes),]
+
+# save results
+write.table(allDEgenes, "results/AllDEColorGenes_alpha0.01.tsv", sep = "\t", row.names = FALSE, na = "")
+```
+
+
+
+
+#### Make some bomb ass figures
+
+
+
+
+
+*R. imitator* significant color gene figures between morphs
+
+```{R imitator: significant color gene figures between morphs, include = FALSE}
+# get sig genes
+imi.morph.genes <- DEgenes("imitator_morphs", "colorgenes")
+# extract counts
+imi.morph.df <- extractTadCounts(imi.morph.genes, imiddsmorph, annos, imisamples)
+# plot genes
+plotGenestime(imi.morph.df, "figures/imitator_morph_colorgenes")
+
+```
+
+
+*R. fantastica* significant color gene figures between morphs
+
+```{R fantastica: significant color gene figures between morphs, include = FALSE}
+# get sig genes
+fant.morph.genes <- DEgenes("fantastica_morphs", "colorgenes")
+# extract counts
+fant.morph.df <- extractTadCounts(fant.morph.genes, fantddsmorph, annos, fantsamples)
+# plot genes
+plotGenestime(fant.morph.df, "figures/fantastica_morph_colorgenes")
+
+```
+
+
+
+*R. variabilis* significant color gene figures between morphs
+
+```{R variabilis: significant color gene figures between morphs, include = FALSE}
+# get sig genes
+var.morph.genes <- DEgenes("variabilis_morphs", "colorgenes")
+# extract counts
+var.morph.df <- extractTadCounts(var.morph.genes, varddsmorph, annos, varsamples)
+# plot genes
+plotGenestime(var.morph.df, "figures/variabilis_morph_colorgenes")
+```
+
+
+#### DE gene figures 
+
+Needs a new plotting function:
+
+
+```{R, gene specific plots}
+GeneFigures <- function(gene_df, dir, title){
+  dir.create(dir)
+  #figs <- unique(df$Gene_name)
+
+ # for (i in 1:length(figs)){
+ #   gene <- figs[i]
+ #   gene_df <- df[df$Gene_name %in% gene, ]
+    
+    # order facets by morph
+    gene_df$morph = factor(gene_df$morph, levels=c("banded", "redheaded", "striped", "spotted"))
+
+    # For better plots/visualizations remove all rows with expression < 1 count
+    gene_df <- gene_df %>% filter(count > 1)
+    
+    # plot
+    ggplot(gene_df,  aes(x = age_weeks, y = count)) + 
+      ggtitle(title)  + 
+      mytheme +
+      ylab("Normalized Counts") + 
+      xlab("Age (weeks)") +
+      geom_boxplot(outlier.shape = NA, lwd=.75, aes(fill = morph)) + 
+      geom_point(position = "jitter") +
+      facet_grid(Gene ~ morph, scales = "free_y") +
+      scale_fill_manual(values = c("orange1", "red1", "yellow2", "chartreuse4")) +
+      #theme(strip.text.x = element_blank(), strip.background = element_blank()) 
+      theme_classic() + theme(axis.text=element_text(size=20), 
+        axis.title=element_text(size=22,face="bold"), plot.title = element_text(size = 22, hjust = 0.5), 
+        strip.text.y = element_text(size = 22), strip.text.x = element_text(size = 22),
+        panel.border = element_rect(color = "black", fill = NA, size = 1), legend.position = "none")
+    
+ # }
+      ggsave(paste0(dir, "/", title, ".png"), width = 11.38, height = (3 * length(unique(gene_df$Gene))))
+
+}
+
+# quick wrapper to pull in data from multiple genes for both species. Output from this will go into figure making code.
+# i think this doesnt work, scrap it.
+extractAllCounts <- function(genes, dds1, dds2, annos, sampledata){
+  df1 <- extractTadCounts(genes, dds1, annos, sampledata)
+  df2 <- extractTadCounts(genes, dds1, annos, sampledata)
+  combined.df <- rbind(df1, df2)
+  
+  return(combined.df)
+}
+
+```
+
+
+```{r TEST}
+test <- c("tyrp1")
+#testdf <- targetedgenes(test, annos)
+
+test.imi <- extractCounts(test, imiddsmorph, annos, imisamples)
+test.fant <- extractCounts(test, fantddsmorph, annos, fantsamples)
+test.var <- extractCounts(test, varddsmorph, annos, varsamples)
+test.df <- rbind(test.imi, test.fant, test.var)
+newtest <- GeneFigures(test.df, "figures/ManuscriptGeneFigures", "test 1")
+
+```
+
+
+
+#### test of different figure designs
+
+```{R GeneFigures facet by morph}
+GeneFigures_morphfacet <- function(gene_df, dir, title){
+  dir.create(dir)
+  
+    # create a column morph x species
+    gene_df$morphXsp <- paste0(as.character(gene_df$morph), as.character(gene_df$species))
+    gene_df$morphXsp <- gsub(pattern = "R", replacement = "", gene_df$morphXsp)
+    
+    # order facets by morph
+    gene_df$morph = factor(gene_df$morph, levels=c("banded", "redheaded", "striped", "spotted"))
+    gene_df$morphXsp = factor(gene_df$morphXsp, levels=c("banded_imitator","banded_fantastica", "redheaded_imitator",  "redheaded_fantastica", "striped_imitator", "striped_variabilis", "spotted_imitator", "spotted_variabilis"))
+
+    # order x axis by order...
+    gene_df$age_weeks <- factor(gene_df$age_weeks, levels=c("1", "2", "4", "5", "7", "8", "9"))
+    # For better plots/visualizations remove all rows with expression < 1 count
+    gene_df <- gene_df %>% filter(count > 1)
+    
+    # plot
+    ggplot(gene_df,  aes(x = age_weeks, y = count)) + 
+      ggtitle(title)  + 
+      mytheme +
+      ylab("Normalized Counts") + 
+      xlab("Age (weeks)") +
+      geom_boxplot(outlier.shape = NA, lwd=.75, aes(fill = species)) + 
+      geom_point(aes(color = species), position = position_jitterdodge()) +
+      facet_grid(Gene ~ morph, scales = "free_y") +
+      scale_fill_manual(values = c("orange1", "red1", "yellow2", "chartreuse4")) +
+      scale_color_manual(values = c("orange1", "red1", "yellow2", "chartreuse4")) +
+      theme_classic() + theme(axis.text=element_text(size=18), 
+        axis.title=element_text(size=18,face="bold"), plot.title = element_text(size = 18, hjust = 0.5), 
+        strip.text.y = element_text(size = 18), strip.text.x = element_text(size = 18),
+        panel.border = element_rect(color = "black", fill = NA, size = 1), 
+        legend.title=element_text(size=18), legend.text=element_text(size=18)) #, legend.position = "none")
+    
+      ggsave(paste0(dir, "/", title, ".png"), width = 11.38, height = (3 * length(unique(gene_df$Gene))))
+  return(gene_df)
+}
+
+#newtest <- GeneFigures_morphfacet(test.df, "figures/ManuscriptGeneFigures", "test_morphfacet_jitterdodged")
+```
+
+```{R GeneFigures facet by species}
+GeneFigures_speciesfacet <- function(gene_df, dir, title){
+  dir.create(dir)
+  
+    # create a column morph x species
+    gene_df$morphXsp <- paste0(as.character(gene_df$morph), as.character(gene_df$species))
+    gene_df$morphXsp <- gsub(pattern = "R", replacement = "", gene_df$morphXsp)
+    
+    # order facets by morph
+    gene_df$morph = factor(gene_df$morph, levels=c("banded", "redheaded", "striped", "spotted"))
+    gene_df$morphXsp = factor(gene_df$morphXsp, levels=c("banded_imitator","banded_fantastica", "redheaded_imitator",  "redheaded_fantastica", "striped_imitator", "striped_variabilis", "spotted_imitator", "spotted_variabilis"))
+
+    # order x axis by order...
+    gene_df$age_weeks <- factor(gene_df$age_weeks, levels=c("1", "2", "4", "5", "7", "8", "9"))
+    # For better plots/visualizations remove all rows with expression < 1 count
+    gene_df <- gene_df %>% filter(count > 1)
+    
+    # plot
+    ggplot(gene_df,  aes(x = age_weeks, y = count)) + 
+      ggtitle(title)  + 
+      mytheme +
+      ylab("Normalized Counts") + 
+      xlab("Age (weeks)") +
+      geom_boxplot(outlier.shape = NA, lwd=.75, aes(fill = morph)) + 
+      geom_point(aes(color = morph), position = position_jitterdodge()) +
+      facet_grid(Gene ~ species, scales = "free_y") +
+      scale_fill_manual(values = c("orange1", "red1", "yellow2", "chartreuse4")) +
+      scale_color_manual(values = c("orange1", "red1", "yellow2", "chartreuse4")) +
+      theme_classic() + theme(axis.text=element_text(size=12), 
+        axis.title=element_text(size=14,face="bold"), plot.title = element_text(size = 14, hjust = 0.5), 
+        strip.text.y = element_text(size = 10), strip.text.x = element_text(size = 8.5),
+        panel.border = element_rect(color = "black", fill = NA, size = 1)) #, legend.position = "none")
+    
+      ggsave(paste0(dir, "/", title, ".png"), width = 11.38, height = (3 * length(unique(gene_df$Gene))))
+  return(gene_df)
+}
+
+newtest <- GeneFigures_speciesfacet(test.df, "figures/ManuscriptGeneFigures", "test_speciesfacet_jitterdodged")
+```
+
+
+I will make various gene figures. 
+
+Pteridine genes:
+
+```{R pteridine gene figure}
+# list pteridine genes
+pters <- c("gchfr", "pts", "qdpr", "xdh")
+
+# extract data
+pter.imi <- extractCounts(pters, imiddsmorph, annos, imisamples)
+pter.fant <- extractCounts(pters, fantddsmorph, annos, fantsamples)
+pter.var <- extractCounts(pters, varddsmorph, annos, varsamples)
+pter.df <- rbind(pter.imi, pter.fant, pter.var)
+
+# make figure
+finalpters <- GeneFigures_morphfacet(pter.df, "figures/ManuscriptGeneFigures", "pteridine genes")
+```
+
+Carotenoid genes: (fix the genes represented...)
+
+```{R carotenoid gene figure}
+# list pteridine genes
+carots <- c("aldh", "bco2", "retsat", "scarb1")
+
+# extract data
+carots.imi <- extractCounts(carots, imiddsmorph, annos, imisamples)
+carots.fant <- extractCounts(carots, fantddsmorph, annos, fantsamples)
+carots.var <- extractCounts(carots, varddsmorph, annos, varsamples)
+carots.df <- rbind(carots.imi, carots.fant, carots.var)
+
+# make figure
+finalcarots <- GeneFigures_morphfacet(carots.df, "figures/ManuscriptGeneFigures", "carotenoid genes")
+```
+
+Melanin genes: 
+
+```{R melanin gene figure}
+# list pteridine genes
+mels <- c("kit", "lef1", "mc1r", "mlph", "mreg", "sfxn1", "tyrp1")
+#kit, lef1, mc1r, mlph, mreg, sfxn 1, tyrp1, 
+# extract data
+mels.imi <- extractCounts(mels, imiddsmorph, annos, imisamples)
+mels.fant <- extractCounts(mels, fantddsmorph, annos, fantsamples)
+mels.var <- extractCounts(mels, varddsmorph, annos, varsamples)
+mels.df <- rbind(mels.imi, mels.fant, mels.var)
+
+# make figure
+finalmels <- GeneFigures_morphfacet(mels.df, "figures/ManuscriptGeneFigures", "melanin genes")
+```
+
+Iridophore genes: 
+
+```{R iridophore gene figure}
+# list pteridine genes
+iris <- c("anx1", "atic", "dgat2", "dock7", "dst", "gart", "gas1", "paics", "pnp")
+#anx1, atic, dgat2(??), dock7, dst, gart, gas1, paics, pnp, 
+
+# extract data
+iris.imi <- extractCounts(iris, imiddsmorph, annos, imisamples)
+iris.fant <- extractCounts(iris, fantddsmorph, annos, fantsamples)
+iris.var <- extractCounts(iris, varddsmorph, annos, varsamples)
+iris.df <- rbind(iris.imi, iris.fant, iris.var)
+
+# make figure
+finaliris <- GeneFigures_morphfacet(iris.df, "figures/ManuscriptGeneFigures", "iridophore genes")
+```
+
+### Gene Ontology analyses  
+
+Import GO analysis information (from *Xenopus*).
+
+```{r prep gene symbol to GO id table, eval = F}
+## this  preps the go table needed, from what i originally downloaded from biomart.
+# load biomart + xenopus thingies. I downloaded these from the ensembl page.
+biomart <- fread("data/biomart_data.txt")
+biomart2 <- biomart[,c(3,5)]
+write.csv(biomart2, "data/gene2GO.text", row.names = FALSE)
+# remove anything without a gene name...
+biomart2 <- biomart2[!(biomart2$`Gene name`==""),]
+# make all lower case
+biomart2$`Gene name` <- tolower(biomart2$`Gene name`)
+colnames(biomart2) <- c("Gene_name", "GO_term_accession")
+
+# now these need to be in the form gene_name \t goid1, goid2, goid3...
+biomart3 <- biomart2 %>% group_by(Gene_name) %>%  mutate(GO_terms = paste0(GO_term_accession, collapse = ", "))
+biomart4 <- biomart3[,c(1,3)]
+biomart4 <- biomart4[!duplicated(biomart4),]
+biomart4 <- as.data.frame(biomart4)
+
+# save as tsv
+write.table(biomart4, "data/geneid2GO.tsv", sep = "\t", row.names = FALSE, col.names = FALSE)
+#geneID2GO <- readMappings("data/geneid2GO.tsv")
+
+# make it a numeric vector for topGO
+geneID2GO <- setNames(biomart4$GO_terms, biomart4$Gene_name)
+
+#geneID2GO <- as.character(biomart4$GO_terms)
+#names(geneID2GO) <- biomart4$Gene_name
+```
+
+Define function to specify which genes we select for GO analyses based on DE results.
+
+```{R function for topGO}
+# which genes do we select? Lets say those with padj < 0.05
+# For topGO this has to be a function in this format!
+topDiffGenes <- function(allScore){
+return(allScore < 0.05)
+}
+
+# load the gene symbol 2 GO terms data
+#geneID2GO <- readMappings("data/geneid2GO.tsv")
+#geneID2GO <- readMappings("C:/Users/Adam Stuckert/Documents/R/R projects/MultispeciesDevSeries/annotation_documents/geneid2GO.tsv")
+```
+
+
+Run enrichment tests in topGO.
+
+
+```{R biological process enrichment test between fantastica color morphs}
+# examine between morphs of fantastica, using the LRT first
+imiresmorph_df <- setDT(as.data.frame(imiresmorph), keep.rownames = "Gene")
+imiresmorph_df <- dplyr::left_join(imiresmorph_df, annos, by = "Gene")
+
+# NAs will throw errors in topGO. Arbitrarily change them to something else, say 0.5
+imiresmorph_df <- imiresmorph_df %>% replace_na(list(padj = "0.5"))
+imiresmorph_df$padj <- as.numeric(imiresmorph_df$padj)
+
+# remove all rows that are just "protein"
+imiresmorph_df <- dplyr::filter(imiresmorph_df, Gene != "protein")
+
+# make it a numeric vector for topGO
+imimorphGO <- setNames(imiresmorph_df$padj, imiresmorph_df$Gene)
+
+# how many are sig
+sum(topDiffGenes(imimorphGO))
+
+# now build the topGO object
+imimorphGOdata <- new("topGOdata",  ontology = "BP", allGenes = imimorphGO, geneSelectionFun = topDiffGenes, annot = annFUN.gene2GO, gene2GO = geneID2GO, nodeSize = 5)
+
+# plot a graph of it
+graph(imimorphGOdata)
+
+# run  a classical enrichment analysis by testing the over-representation of GO terms within the group of differentially expressed genes using a Kolmogorov-Smirnov test
+fantmorphKS <- runTest(imimorphGOdata, algorithm = "classic", statistic = "ks")
+
+# pull out p values for each GO term
+fantmorphdatKS <- score(fantmorphKS)
+
+# plot the distribution of p values 
+hist(fantmorphdatKS, 50, xlab = "p-values")
+
+# make it into a data frame
+fantmorphKS_df <- data.frame(keyName=names(fantmorphdatKS), value=fantmorphdatKS, row.names=NULL)
+colnames(fantmorphKS_df) <- c("GO_term","p_val")
+
+# how many are "significant" at p < 0.05?
+table(fantmorphKS_df[,"p_val"] < 0.05)
+
+# which GO terms are "significant"?
+fantmorphKS_sig <- dplyr::filter(fantmorphKS_df, p_val < 0.05)
+
+
+```
+
+OK so something is wrong here. I'm going to produce a single list ranked by log fold change and run through GOrilla.
+
+```{r imitator logfold change list}
+# 
+imiresmorph_df <- setDT(as.data.frame(imiresmorph), keep.rownames = "Gene")
+imiresmorph_df <- dplyr::left_join(imiresmorph_df, annos, by = "Gene")
+
+# create a column of gene symbol
+imiresmorph_df$gene_symbol <- gsub(pattern = "\\s.*$", replacement = "", imiresmorph_df$Gene)
+
+# remove all rows that are just "protein"
+imiresmorph_df <- dplyr::filter(imiresmorph_df, gene_symbol != "protein")
+
+# order by logfold change
+imiresmorph_df <- imiresmorph_df[order(-abs(imiresmorph_df$log2FoldChange)),]
+
+write.table(imiresmorph_df, "results/imitatormorph4GOrilla.tsv", sep = "\t", row.names = FALSE)
+```
+
+
+```{r fantastica logfold change list}
+# 
+fantresmorph_df <- setDT(as.data.frame(fantresmorph), keep.rownames = "Gene")
+fantresmorph_df <- dplyr::left_join(fantresmorph_df, annos, by = "Gene")
+
+# create a column of gene symbol
+fantresmorph_df$gene_symbol <- gsub(pattern = "\\s.*$", replacement = "", fantresmorph_df$Gene)
+
+# remove all rows that are just "protein"
+fantresmorph_df <- dplyr::filter(fantresmorph_df, gene_symbol != "protein")
+
+# order by logfold change
+fantresmorph_df <- fantresmorph_df[order(-abs(fantresmorph_df$log2FoldChange)),]
+
+write.table(fantresmorph_df, "results/fantasticamorph4GOrilla.tsv", sep = "\t", row.names = FALSE)
+```
+
+```{r variabilis logfold change list}
+# 
+varresmorph_df <- setDT(as.data.frame(varresmorph), keep.rownames = "Gene")
+varresmorph_df <- dplyr::left_join(varresmorph_df, annos, by = "Gene")
+
+# create a column of gene symbol
+varresmorph_df$gene_symbol <- gsub(pattern = "\\s.*$", replacement = "", varresmorph_df$Gene)
+
+# remove all rows that are just "protein"
+varresmorph_df <- dplyr::filter(varresmorph_df, gene_symbol != "protein")
+
+# order by logfold change
+varresmorph_df <- varresmorph_df[order(-abs(varresmorph_df$log2FoldChange)),]
+
+write.table(varresmorph_df, "results/variabilismorph4GOrilla.tsv", sep = "\t", row.names = FALSE)
+```
+
+## GO analyses for developmental stage
+
+```{r imitator logfold change list}
+# 
+imiresstage_df <- setDT(as.data.frame(imiresstage), keep.rownames = "Gene")
+imiresstage_df <- dplyr::left_join(imiresstage_df, annos, by = "Gene")
+
+# create a column of gene symbol
+imiresstage_df$gene_symbol <- gsub(pattern = "\\s.*$", replacement = "", imiresstage_df$Gene)
+
+# remove all rows that are just "protein"
+imiresstage_df <- dplyr::filter(imiresstage_df, gene_symbol != "protein")
+
+# order by logfold change
+imiresstage_df <- imiresstage_df[order(-abs(imiresstage_df$log2FoldChange)),]
+
+write.table(imiresstage_df, "results/imitatorstage4GOrilla.tsv", sep = "\t", row.names = FALSE)
+```
+
+
+```{r fantastica logfold change list}
+# 
+fantresstage_df <- setDT(as.data.frame(fantresstage), keep.rownames = "Gene")
+fantresstage_df <- dplyr::left_join(fantresstage_df, annos, by = "Gene")
+
+# create a column of gene symbol
+fantresstage_df$gene_symbol <- gsub(pattern = "\\s.*$", replacement = "", fantresstage_df$Gene)
+
+# remove all rows that are just "protein"
+fantresstage_df <- dplyr::filter(fantresstage_df, gene_symbol != "protein")
+
+# order by logfold change
+fantresstage_df <- fantresstage_df[order(-abs(fantresstage_df$log2FoldChange)),]
+
+write.table(fantresstage_df, "results/fantasticastage4GOrilla.tsv", sep = "\t", row.names = FALSE)
+```
+
+```{r variabilis logfold change list}
+# 
+varresstage_df <- setDT(as.data.frame(varresstage), keep.rownames = "Gene")
+varresstage_df <- dplyr::left_join(varresstage_df, annos, by = "Gene")
+
+# create a column of gene symbol
+varresstage_df$gene_symbol <- gsub(pattern = "\\s.*$", replacement = "", varresstage_df$Gene)
+
+# remove all rows that are just "protein"
+varresstage_df <- dplyr::filter(varresstage_df, gene_symbol != "protein")
+
+# order by logfold change
+varresstage_df <- varresstage_df[order(-abs(varresstage_df$log2FoldChange)),]
+
+write.table(varresstage_df, "results/variabilisstage4GOrilla.tsv", sep = "\t", row.names = FALSE)
+```
+
