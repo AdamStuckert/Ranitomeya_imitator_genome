@@ -6,4 +6,4 @@ Following this we conducted differential expression analyses using the R package
 
 Additionally, we used the WGCNA package in R to [examine how genes are coexpressed and their correlation to treatment groups](https://github.com/AdamStuckert/Ranitomeya_imitator_genome/blob/master/GeneExpression/MimeticWGCNA.Rmd).
 
-Finally, this folder has [the script we used to produce various figures describing the genome that are in the publication](https://github.com/AdamStuckert/Ranitomeya_imitator_genome/blob/master/GeneExpression/GenomeLengthFigure.R). Does this really belong here? No probably not, but its a pandemic and I'm in charge of this repository.
+Finally, this folder has [the script we used to produce various figures describing the genome that are in the publication](https://github.com/AdamStuckert/Ranitomeya_imitator_genome/blob/master/GeneExpression/GenomeLengthFigure.R). Does this really belong here? No probably not. But it is a pandemic and I'm in charge of this repository.
