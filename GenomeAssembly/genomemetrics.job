@@ -1,24 +1,34 @@
 #!/bin/bash
 #SBATCH --job-name=genome_metrics
 #SBATCH --output=genome.metrics.log
-#SBATCH --cpus-per-task=24
-#SBATCH --partition=macmanes,shared
+#SBATCH --cpus-per-task=40
+#SBATCH --partition=macmanes
+#SBATCH --exclude=node117,node118
 # echo commands to stdout
 set -x
 
+# set environments
 module purge
 module load linuxbrew/colsa
 
+# variables
 DIR=$(pwd)
 ASSEMBLY=$1
 BUSCO_OUT=$2
 
-##### Quast analysis
-quast -1 ${DIR}/raw_10xdata/Rimi_S1_L001_R1_001.fastq.gz -2 ${DIR}/raw_10xdata/Rimi_S1_L001_R2_001.fastq.gz $ASSEMBLY -t 24 --eukaryote -m 50
+# setup
+mkdir assembly_stats
 
-# print quast results
-echo QUAST RESULTS
-cat ${DIR}/quast_results/latest/report.txt
+echo RUNNING GENOME ASSEMBLY METRICS
+
+##### Assemblathon stats analysis
+echo Running assemblathon script
+/mnt/lustre/macmaneslab/ams1236/software/assemblathon/assemblathon_stats.pl $ASSEMBLY | tee assembly_stats/${BUSCO_OUT}.stats
+
+# print results
+echo LENGTH AND CONTIGUITY RESULTS
+cat assembly_stats/${BUSCO_OUT}.stats
+
 
 ###### BUSCO analysis
 ## Tetrapoda lineage
@@ -27,4 +37,4 @@ mv tetrapoda.config.ini config.ini
 
 export AUGUSTUS_CONFIG_PATH="/mnt/lustre/macmaneslab/ams1236/software/busco_info/config/"
 
-busco -i $ASSEMBLY -m geno --cpu 24 -o $BUSCO_OUT
+busco -i ${ASSEMBLY} -m geno --cpu 40 -o ${BUSCO_OUT}
