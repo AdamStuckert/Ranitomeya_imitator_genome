@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#SBATCH --partition=macmanes
+#SBATCH -J rails
+#SBATCH --cpus-per-task=40
+#SBATCH --output rails.${2}.log
+#SBATCH --mem 700Gb
+#SBATCH --exclude node117
+
+
+###### USAGE: $1 is input assembly, $2 is parameters ("ont", "pacbio", or "nil"), $3 is output assembly name
+
+
+module load linuxbrew/colsa
+
+
+
+# set variables
+ASSEMBLY=$1
+READ_PARAMETERS=$2
+ASSEMBLY_OUT=$3
+ASSNAME=$(basename $ASSEMBLY)
+READS="/mnt/lustre/macmaneslab/ams1236/imitator_genome/reads/PacBio_reads.fa"
+READNAME=$(basename $READS)
+
+mkdir rails_${READ_PARAMETERS}
+cd rails_${READ_PARAMETERS}
+
+ln -s $ASSEMBLY $ASSNAME
+ln -s $READS $READNAME
+
+runRAILSminimap.sh \
+$ASSNAME \
+$READNAME \
+90 0.90 90 1 $READ_PARAMETERS \
+~/linuxbrew/.linuxbrew/bin/samtools
+
+# copy assembly into new name
+cp *rails.scaffolds.fa $ASSEMBLY_OUT
+
+# clean up big files
+rm *bam
+rm *formatted.fa
