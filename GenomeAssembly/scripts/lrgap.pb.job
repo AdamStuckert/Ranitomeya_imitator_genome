@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#SBATCH --partition=macmanes,shared
+#SBATCH -J LR_gappb
+#SBATCH --cpus-per-task=40
+#SBATCH --output LRgappb.log
+#SBATCH --exclude=node117,node118
+#SBATCH --mem 700Gb
+
+
+module load linuxbrew/colsa
+
+ASSEMBLY=$1
+DIR=$(pwd)
+ASSEMBLY_OUT=$2
+
+echo working with $ASSEMBLY in $DIR
+
+LR_Gapcloser.sh -i ${DIR}/${ASSEMBLY} \
+-l /mnt/lustre/macmaneslab/ams1236/imitator_genome/reads/PacBio_reads.fa \
+-t 40 -o ${DIR}/lrgapfilled_pb -s p -r 3
+
+cp lrgapfilled_pb/iteration-3/gapclosed.fasta lrgapfilled_pb/$ASSEMBLY_OUT
