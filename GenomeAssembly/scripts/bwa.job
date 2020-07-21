@@ -1,0 +1,38 @@
+#!/bin/bash
+
+#SBATCH --partition=macmanes
+#SBATCH -J bwa
+#SBATCH --output bwa.log
+#SBATCH --cpus-per-task=40
+#SBATCH --exclude node117,node118
+
+DIR=$(pwd)
+ASSEMBLY=$1
+PilDir=$2
+
+species="Ranitomeya_imitator"
+prefix="Rimi"
+
+
+READ1="Rimi_S1_L001_R1_001.fastq.gz"
+READ2="Rimi_S1_L001_R2_001.fastq.gz"
+
+
+module purge
+module load linuxbrew/colsa
+
+echo Running BWA on $ASSEMBLY
+
+
+mkdir pilon
+cd pilon
+
+bwa index ${DIR}/${ASSEMBLY}
+
+rm -f "$prefix".sorted.bam
+rm -f "$prefix".sorted.bam.bai
+
+bwa mem -t 40 ${DIR}/${ASSEMBLY} ${DIR}/raw_10xdata/${READ1} ${DIR}/raw_10xdata/${READ2} \
+| samtools view -@20 -Sb - \
+| samtools sort -T "$prefix" -O bam -@20 -l9 -m2G -o "$prefix".sorted.bam -
+samtools index "$prefix".sorted.bam
