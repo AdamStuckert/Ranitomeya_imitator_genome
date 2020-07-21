@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH --partition=macmanes,shared
+#SBATCH -J LR_gapnano
+#SBATCH --cpus-per-task=40
+#SBATCH --output LRgapnano.log
+#SBATCH --mem 310Gb
+#SBATCH --exclude=node117,node118
+module load linuxbrew/colsa
+
+ASSEMBLY=$1
+DIR=$(pwd)
+ASSEMBLY_OUT=$2
+
+echo working with $ASSEMBLY in $DIR
+
+LR_Gapcloser.sh -i ${DIR}/${ASSEMBLY} \
+-l /mnt/lustre/macmaneslab/ams1236/imitator_genome/reads/nanopore_reads.fa \
+-t 40 -o ${DIR}/lrgapfilled_ont -s n -r 3
+
+cp lrgapfilled_ont/iteration-3/gapclosed.fasta lrgapfilled_ont/$ASSEMBLY_OUT
