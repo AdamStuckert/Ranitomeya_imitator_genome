@@ -87,8 +87,6 @@ awk -F',' '{print $1}' imitator.1.1.fa > tmp.fa
 mv tmp.fa imitator.1.1.fa 
 ```
 
-**This has been fixed, presumably. Leaving this here in case it does not work, so I have a starting point. I also added some cleanup code to remove files that aren't needed**
-
 Genome metrics from assembly scaffolded with 10x data (which is imitator.1.1.fa):
 
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
@@ -127,7 +125,7 @@ Using this assembly, renaming it `imitator.1.2.fa`.
 Following this: pilon polishing and gapfilling with LRgap.
 
 
-**been repeatedly bitten by the damn bwa/pilon naming of contigs/scaffold issue. add a workaround to one script or another!**
+**I have been repeatedly bitten by the damn bwa/pilon naming of contigs/scaffold issue. Below is a workaround to this!**
 
 Workaround, probably should go in `bwa.job` at the beginning of script:
 ```bash
@@ -155,8 +153,6 @@ imitator.1.2.2 (ONT filled) | 6.79 | 247642 | 339195 | 0.01 | C:92.6%[S:74.5%,D:
 imitator.1.2.3 (PacBio filled) | 6.79 | 272070 | 339195 | 0.00 | C:92.7%[S:74.5%,D:18.2%],F:4.3%,M:3.0%,n:3950
 
 Next I will polish this gap-filled assembly with Pilon using 10x Illumina reads.
-
-**quick note to self: fix pilon.job and bwa.job so that the pilon directory is hard coded**
 
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
@@ -235,12 +231,9 @@ Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO
 --- | --- | --- | --- | --- | ---
 imitator.1.3.6 | 6.79 | 301327 | 397629 | 0.01 | C:92.7%[S:73.6%,D:19.1%],F:4.3%,M:3.0%,n:3950
 
+### Genome annotation
 
-The arrival of our Hi-C data is imminent. Rather than continuing to incrementally eek out improvements, I will wait for this data. Then, I will use the Hi-C data to scaffold the current assembly (1.3.5), as well as scaffold the original assembly. The rationale behind this is that while we have definitely improved the quality of the assembly, we have also had an increase of ~3% of duplicated genes. I would like to make sure that this is a "real" thing and not an assembly artifact.
-
-### Update from the pandemic 
-
-I'm beginning to think that our Hi-C data will never materialize. Thanks coronavirus! We are moving forward without the Hi-C data. I will run Maker to annotate the genome, as well as run BUSCO against the new version of the database/software. I've done some preliminary tests that indicate that running Maker alone to annotate will have issues due to repeat regions. So I'm running Maker thrice: once without transcript evidence, once with transcript evidence, and finally once with transcript evidence after running Repeat Modeler and Repeat Masker.
+I will run Maker to annotate the genome, as well as run BUSCO against the new version of the database/software. I've done some preliminary tests that indicate that running Maker alone to annotate will have issues due to repeat regions. So I'm running Maker thrice: once without transcript evidence, once with transcript evidence, and finally once with transcript evidence after running Repeat Modeler and Repeat Masker.
 
 Stand alone Maker code is currently in the Maker directory. 
 
