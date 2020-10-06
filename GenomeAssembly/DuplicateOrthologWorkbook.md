@@ -142,7 +142,7 @@ scaffold_count <- count(duplicated_genes, Scaffold)
 write.csv(scaffold_count, "scaffold_count.csv")
 ```
 
-Calculate number of duplicated orthologs per scaffold:
+Calculate number of duplicated orthologs per scaffold normalized by scaffold length:
 
 ```
 #! /usr/bin/env python3
@@ -198,7 +198,7 @@ for key in comboDictionary:
     except:
         continue
 ```
-
+See how many duplicates appear on the same scaffold:
 
 ```
 #! /usr/bin/env python3
