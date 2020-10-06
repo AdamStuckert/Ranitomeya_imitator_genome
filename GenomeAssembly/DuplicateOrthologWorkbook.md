@@ -90,7 +90,7 @@ with open("BUSCO4_duplicatedGenes.tsv", "r") as duplicatedGenes:
 
 #Read in genome depth file
 
-# ************ Change Depth File for each read Technology (Illumina Depth is used here) ************
+# ************ Change Depth File for each read Technology (PacBio Depth is used here) ************
 
 with open("PacBioMiniMapDepth.tsv", "r") as genomeDepth:
     for genomeLine in genomeDepth:
