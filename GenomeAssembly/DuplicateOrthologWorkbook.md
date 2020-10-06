@@ -124,10 +124,7 @@ Calculate number of duplicated orthologs per scaffold:
 library(plyr)
 library(dplyr)
 
-#MAKE SURE TO SET WORKING DIRECTORY
-
 #Read in File
-
 duplicated_genes <- read.table("BUSCO4_duplicated.tsv", sep = "\t", header = T, stringsAsFactors = F)
 
 head(duplicated_genes)
@@ -198,7 +195,8 @@ for key in comboDictionary:
     except:
         continue
 ```
-See how many duplicates appear on the same scaffold:
+
+Do both copies of orthologs ever appear on the same scaffold?
 
 ```
 #! /usr/bin/env python3
