@@ -199,7 +199,7 @@ for key in comboDictionary:
         continue
 ```
 
-**Troy does this have an output that is used in other scripts????**
+
 ```
 #! /usr/bin/env python3
 
