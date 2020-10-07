@@ -29,6 +29,7 @@ sed "s/_pilon//g" Ranitomeya_imitator.imitator.1.3.6.functional.gff3 > Ranitomey
 Create the flat file
 
 ```bash
+module purge
 conda activate embl
 EMBLmyGFF3 Ranitomeya_imitator_genomeassembly_1.0.fa Ranitomeya_imitator_genomeassembly_1.0.gff3 \
         --data_class WGS \
