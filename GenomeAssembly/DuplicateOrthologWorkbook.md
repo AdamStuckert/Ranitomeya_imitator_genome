@@ -245,4 +245,4 @@ with open("BUSCO4_duplicated.tsv", "r") as duplicatedGenes:
             print(key, dupDictionary[key])
 ```
 
-We then calculated sliding window statistics for the data using an [R script that we ran on the cluster](ADD LINK HERE). The results of this script were then used to compare orthologs present in single copies and duplicated copies in a [subsequent R script which we ran locally](ADD LINK HERE).
+We then calculated sliding window statistics for the data using an [R script that we ran on the cluster](https://github.com/AdamStuckert/Ranitomeya_imitator_genome/blob/master/GenomeAssembly/scripts/BUSCO4_Dups.R). The results of this script were then used to compare orthologs present in single copies and duplicated copies in a [subsequent R script which we ran locally](https://github.com/AdamStuckert/Ranitomeya_imitator_genome/blob/master/GenomeAssembly/scripts/GenomeDuplicates.Rmd).
