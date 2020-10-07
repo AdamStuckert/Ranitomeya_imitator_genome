@@ -1,0 +1,354 @@
+---
+title: "GeneDuplicates"
+author: "Adam Stuckert"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(data.table)
+library(RcppRoll)
+dir.create("results/duplicateresults")
+```
+
+I have calculated sliding window statistics in a script on the cluster. See Rscript `BUSCO_dups.R`.
+
+Now some quick calculations based on the above script. This script outputs a file of averages per gene region, as well as a file of sliding window statistics. The sliding window stats file is giant, and they will be a problem to deal with. 
+
+### Analysis of averages per gene region
+
+```{R BUSCO region data import}
+dups_dat <- fread("data/duplicates/BUSCOregionstatistics_duplicated_BUSCO4.tsv", header = TRUE, sep = "\t")
+
+```
+
+Spread data.
+
+```{r data spread}
+# spread data
+dups_dat2 <- gather(dups_dat,
+                   key = "seq_tech",
+                   value = "mean",
+                   mean_PB_depth, mean_ONT_depth,mean_Ill_depth)  %>%  dplyr::select(-c(sd_PB_depth, sd_ONT_depth, sd_Ill_depth))
+str(dups_dat2)
+
+dups_dat2$seq_tech <- gsub(pattern = "mean_", replacement = "", dups_dat2$seq_tech) %>% gsub(pattern = "_depth", replacement = "", dups_dat2$seq_tech)
+```
+
+
+Plot.
+
+```{R plot regions of interest}
+dup_plot <- ggplot(dups_dat2, aes(x = seq_tech, y = mean)) +
+  geom_violin() + geom_point(alpha = 0.25, position = "jitter", size = 0.5) + 
+  ylab("Depth (bp)") +
+  xlab("Sequencing technology") +
+  theme_classic() 
+dup_plot
+
+
+```
+
+Why is there a point near 1000 for Illumina? Drop that outlier for better plotting.
+
+```{R plot regions of interest but drop Illumina outlier}
+dup_plot <- ggplot(dups_dat2, aes(x = seq_tech, y = mean)) +
+  geom_violin() + geom_point(alpha = 0.25, position = "jitter", size = 0.5) + 
+  ylab("Depth (bp)") +
+  xlab("Sequencing technology") +
+  theme_classic() +
+  ylim(0, 325)
+dup_plot
+
+
+```
+
+
+Now run calculations based on the single copy BUSCO genes.
+
+```{R BUSCO region data import}
+single_dat <- fread("data/duplicates/BUSCOregionstatistics_singlecopygenes_BUSCO4.tsv", header = TRUE, sep = "\t")
+
+```
+
+Spread data.
+
+```{r data spread}
+single_dat2 <- gather(single_dat,
+                   key = "seq_tech",
+                   value = "mean",
+                   mean_PB_depth, mean_ONT_depth,mean_Ill_depth) %>% 
+        dplyr::select(-c(sd_PB_depth, sd_ONT_depth, sd_Ill_depth))
+str(single_dat2)
+
+single_dat2$seq_tech <- gsub(pattern = "mean_", replacement = "", single_dat2$seq_tech) %>% gsub(pattern = "_depth", replacement = "", single_dat2$seq_tech)
+```
+
+
+Plot.
+
+```{R plot regions of interest}
+single_plot <- ggplot(single_dat2, aes(x = seq_tech, y = mean)) +
+  geom_violin() + geom_point(alpha = 0.25, position = "jitter", size = 0.5) + 
+  ylab("Depth (bp)") +
+  xlab("Sequencing technology") +
+  theme_classic() 
+single_plot
+
+
+```
+
+
+
+
+plot both the single copy and duplicate copy regions together.
+
+```{R plot dups + singles}
+# merge dfs
+dups_dat2$source = "duplicated"
+single_dat2$source = "single"
+big_dat <- rbind(single_dat2, dups_dat2)
+
+# relevel source
+big_dat$source <- as.factor(big_dat$source)
+big_dat$source <- relevel(big_dat$source, "single")
+
+
+# plot
+big_plot <- ggplot(big_dat, aes(x = seq_tech, y = mean)) +
+  geom_violin() + 
+  facet_grid(. ~ source) +
+  geom_point(alpha = 0.25, position = "jitter", size = 0.5) + 
+  ylab("Depth (bp)") +
+  xlab("Sequencing technology") +
+  theme_classic() 
+big_plot
+
+```
+
+
+Why are there points near 1000 and 800 for Illumina? Drop those outliers for better plotting.I'll be limited the y axis to 0-30, which only removes 2 points in total.
+
+```{R }
+# plot
+big_plot2 <- ggplot(big_dat, aes(x = seq_tech, y = mean)) +
+  geom_violin() + 
+  facet_grid(. ~ source) +
+  geom_point(alpha = 0.25, position = "jitter", size = 0.5) + 
+  ylab("Depth (bp)") +
+  xlab("Sequencing technology") +
+  theme_classic() +
+  ylim(0, 325)
+big_plot2
+
+```
+
+### Calculations
+Some calculations to see if the above duplicated information is extra wierd compared to single copy genes.
+
+How many of these duplicated genes are well-outside the norm of average sequencing depth. We are preliminarily describing this as mean sequencing depth + 2 standard deviations or less than 10x coverage (roughly mean sequencing depth - 2/3 sd).
+
+Note: the mean and sd here are calculated with outliers (x = 0, x > 1000 bp) removed.
+
+```{r identify regions with odd sequencing depth}
+# set PB mean and sd, these are outliers removed...
+ave_PB_depth = 33.51
+sd_PB_depth = 37.97
+
+PB_dups <- dups_dat2 %>% filter(seq_tech == "PB")
+PB_dups_outliers <- PB_dups %>% filter(mean <= 10 | mean >= (ave_PB_depth + 2*sd_PB_depth))
+PB_dups_lowcov <- PB_dups %>% filter(mean <= 10)
+
+cat(paste0("Number of duplicated instances: ", length(unique(PB_dups$mean)), "\n"))
+cat(paste0("Number of duplicated instances with sequencing depth outside of mean +/- 2 sd: ", length(unique(PB_dups_outliers$mean)), "\n"))
+cat(paste0("Number of duplicated instances with sequencing depth lower than 10x: ", length(unique(PB_dups_lowcov$mean)), "\n"))
+```
+
+How many of these single copy genes are well-outside the norm of average sequencing depth. We are preliminarily describing this as mean sequencing depth +/- 2 standard deviations.
+
+```{r identify regions with odd sequencing depth}
+# set PB mean and sd, these are outliers removed...
+ave_PB_depth = 33.51
+sd_PB_depth = 37.97
+
+PB_singles <- single_dat2 %>% filter(seq_tech == "PB")
+PB_singles_outliers <- PB_singles %>% filter(mean <= 10 | mean >= (ave_PB_depth + 2*sd_PB_depth))
+PB_singles_lowcov <- PB_singles %>% filter(mean <= 10)
+
+cat(paste0("Number of single copy genes: ", length(unique(PB_singles$mean)), "\n"))
+cat(paste0("Number of single copy genes with sequencing depth outside of mean +/- 2 sd: ", length(unique(PB_singles_outliers$mean)), "\n"))
+cat(paste0("Number of duplicated instances with sequencing depth lower than 10x: ", length(unique(PB_dups_lowcov$mean)), "\n"))
+```
+
+Plot single copy and duplicated copy outliers!
+
+```{R plot dups + singles outliers}
+# merge dfs
+PB_dups$source = "duplicated"
+PB_singles$source = "single"
+PBdat <- rbind(PB_dups, PB_singles)
+
+# make a column for outliers
+PB_dat_outliers <- PBdat %>% filter(mean <= 10 | mean >= (ave_PB_depth + 2*sd_PB_depth))
+PB_dat_notoutliers <- PBdat %>% filter(mean > 10 & mean < (ave_PB_depth + 2*sd_PB_depth))
+
+# id as outliers
+PB_dat_outliers$outlier <- "outlier"
+PB_dat_notoutliers$outlier <- "not outlier"
+
+PBdat <- rbind(PB_dat_outliers, PB_dat_notoutliers)
+
+
+# relevel source
+PBdat$source <- as.factor(PBdat$source)
+PBdat$source <- relevel(PBdat$source, "single")
+
+
+# plot
+outliers_plot <- ggplot(PBdat, aes(x = seq_tech, y = mean, color = outlier)) +
+  geom_violin() + 
+  facet_grid(. ~ source) +
+  geom_point(alpha = 0.25, position = "jitter", size = 0.5) + 
+  scale_color_manual(values=c("black", "red")) +
+  ylab("Depth (bp)") +
+  xlab("Sequencing technology") +
+  geom_hline(yintercept = ave_PB_depth, color = "red") + # note this is the mean without outliers....
+  theme_classic() 
+outliers_plot
+
+```
+
+
+Plot this without labelling outliers to just compare the two groups:
+
+```{r}
+# plot
+outliers_plot <- ggplot(PBdat, aes(x = source, y = mean)) +
+  geom_violin(size = 1.25) + 
+  geom_point(alpha = 0.4, position = "jitter", size = 0.5, aes(color = outlier)) + 
+  scale_color_manual(values=c("black", "red")) +
+  ylab("Depth (bp)") +
+  xlab("Copy number") +
+  scale_y_continuous(breaks = c(0,12.5, 25,50,75,100,125,150,175,200,225), labels = c(0,12.5, 25,50,75,100,125,150,175,200,225)) + 
+  geom_hline(yintercept = ave_PB_depth, color = "red") + # note this is the mean without outliers....
+  theme_classic() + 
+  coord_cartesian(expand = FALSE, ylim = c(0,235)) + 
+  guides(color = guide_legend(override.aes = list(size=3)))
+outliers_plot
+
+ggsave("figures4publication/DuplicateViolinOutliers.png", width = 8.69, height = 7, dpi = 600)
+```
+
+Plot the above without outliers in a different color.
+
+```{r}
+# plot
+outliers_plot <- ggplot(PBdat, aes(x = source, y = mean)) +
+  geom_violin(size = 1.25) + 
+  geom_point(alpha = 0.75, position = "jitter", size = 0.75) + 
+  scale_color_manual(values=c("black", "red")) +
+  ylab("Depth (bp)") +
+  xlab("Copy number") +
+  scale_y_continuous(breaks = c(0,12.5, 25,50,75,100,125,150,175,200,225), labels = c(0,12.5, 25,50,75,100,125,150,175,200,225)) + 
+  geom_hline(yintercept = ave_PB_depth, color = "red") + # note this is the mean without outliers....
+  theme_classic() + 
+  coord_cartesian(expand = FALSE, ylim = c(0,235)) +
+  theme(text = element_text(size = 20))
+outliers_plot
+
+ggsave("figures4publication/DuplicateViolin.png", width = 8.69, height = 7, dpi = 600)
+```
+
+What about an actual statistical test?
+
+```{R ortholog statistics}
+# summary stats
+ortho_sum_stats <- PBdat %>% group_by(source) %>% summarise(mean_coverage = mean(mean), sd_coverage = sd(mean))
+ortho_sum_stats
+
+# run a t-test
+t.test(mean ~ source, data = PBdat)
+```
+
+
+### Get in kids, we are looking at some repeats!
+
+what am i even doing with my life
+
+```{R calculate repeat data for masked regions of genome}
+# note about these data. They are in a file produced by repeatmasker called `imitator.1.3.6.fa.out`
+
+#!/bin/bash
+# awk '{print $5, $6, $7, $11}' imitator.1.3.6.fa.out > imitator.1.3.6.fa.certaincolumns.out
+# I then removed the weird header lines that are funky. I also renamed column headers.
+
+
+# import data
+reps <- fread("data/duplicates/imitator.1.3.6.fa.certaincolumns.out")
+
+# calculate length of repeat
+reps <- dplyr::mutate(reps, length = repeat_end - repeat_begin)
+
+# summariiiiiieeeees
+reps_sum <- reps %>% group_by(repeat_type) %>% summarise(mean_length = mean(length), sd = sd(length), number_of_repeats = n(), minimum_length = min(length), maximum_length = max(length), total_bp = sum(length), Gbp = sum(length)/1000000000)
+
+# total genomic content in repeats here
+print(paste0("Total repeat content in the genome from these major families (in Gbp): ", sum(reps_sum$Gbp)))
+
+# save these summary data
+write.csv(reps_sum, "results/duplicateresults/RepeatSummaryStats.csv", row.names = FALSE)
+```
+
+
+Plot these with just a violin plot, no points. 
+
+```{R plot regions of interest}
+reps_plot <- ggplot(reps, aes(x = repeat_type, y = length)) +
+  geom_violin() + #geom_point(alpha = 0.25, position = "jitter", size = 0.5) + 
+  ylab("Length (bp)") +
+  xlab("Repeat type") + 
+  scale_y_log10() +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, color = "black"))
+reps_plot
+
+
+```
+
+Add points to the violin plot.
+
+```{R plot regions of interest}
+reps_plot <- ggplot(reps, aes(x = repeat_type, y = length)) +
+  geom_point(alpha = 0.05, position = "jitter", size = 0.1) +  geom_violin(size = 1, color = "red", fill = NA) +
+  ylab("Length (bp)") +
+  xlab("Repeat type") + 
+  scale_y_log10(labels = scales::comma, breaks = c(10, 100, 1000, 10000, 100000)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, color = "black"))
+reps_plot
+
+ggsave("figures4publication/RepeatLengths.png", width = 7.4, height = 4, dpi = 600)
+```
+
+OK that was a dumb way to plot this. Took forever. 0.5/10, do not recommend. 
+
+Instead I will plot just the summary data!
+
+
+```{R plot regions of interest}
+sum_plot <- ggplot(reps_sum, aes(x = repeat_type, y = mean_length)) +
+  geom_point() + 
+  geom_errorbar(aes(ymin = mean_length - sd, ymax = mean_length + sd)) +
+  ylab("Length (bp)") +
+  xlab("Repeat type") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, color = "black"))
+sum_plot
+
+
+```
+
