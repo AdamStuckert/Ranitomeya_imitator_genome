@@ -1,8 +1,10 @@
 ---
 title: "MimeticWGCNA"
 author: "Adam Stuckert"
-date: "July 3, 2020"
-output: html_document
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r global_options, include=FALSE}
@@ -29,6 +31,9 @@ library(WGCNA)
 library(flashClust)
 library(nlme)
 dir.create("results/WGCNAresults")
+library(igraph)
+
+### Note: cytoscape must be downloaded on to your local machine externally from R.
 ```
 
 Print R environment information:
@@ -58,7 +63,7 @@ dds <- DESeqDataSetFromMatrix(countData = WGCNAdata,
 
 ```
 
-```{r, include=FALSE}
+```{r, evaluate genes to remove}
 
 ## using counts imported via tximports from above
 vsd <- vst(dds, blind = FALSE)
@@ -84,13 +89,6 @@ gsg$allOK
 Do they match up?
 
 ```{r}
-## sample data for fant WGCNA analysis
-#datafant <- sampledata[grep("fantastica", row.names(sampledata)),]
-#head(datafant)
-
-# remove unneeded columns
-#data <- sampledata[,-c(1,2,5)]
-
 # verify data and sample information align
 table(WGCNAsamples$sample==rownames(vsd))
 
@@ -98,7 +96,6 @@ table(WGCNAsamples$sample==rownames(vsd))
 WGCNAsamples <- dplyr::select(WGCNAsamples, -c(filename,lane))
 # make sample id row name...
 WGCNAsamples <- data.frame(WGCNAsamples[,-1], row.names=WGCNAsamples[,1])
-#datafant <- datafant[,c(3,4,6,7)]
 
 ```
 
@@ -145,7 +142,7 @@ plot(sft$fitIndices[,1], sft$fitIndices[,5], xlab= "Soft Threshold (power)", yla
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, col="red")
 ```
 
-Soft power asymptotes pretty hard. I'll attempt this with 20. 
+Soft power asymptotes pretty hard. I'll attempt this with 20. ### Note to self is this right????
 
 Construct networks.
 
@@ -197,7 +194,7 @@ par(mar= c(6, 8.5, 3, 3))
 #display the corelation values with a heatmap plot
 labeledHeatmap(Matrix= moduleTraitCor, 
             xLabels= names(WGCNAsamples), 
-            yLabels= names(MEs), 
+            yLabels= gsub(pattern = "ME", replacement = "", names(MEs)), 
             ySymbols= names(MEs), 
             colorLabels= FALSE, 
             colors= blueWhiteRed(50), 
@@ -214,8 +211,8 @@ png("figures/WGCNA_heatmap.png", width = 9.5, height = 7, units = "in", res = 30
 par(mar= c(6, 12, 3, 3))
 labeledHeatmap(Matrix= moduleTraitCor, 
             xLabels= names(WGCNAsamples), 
-            yLabels= names(MEs), 
-            ySymbols= names(MEs), 
+            yLabels= gsub(pattern = "ME", replacement = "", names(MEs)), 
+            ySymbols= gsub(pattern = "ME", replacement = "", names(MEs)), 
             colorLabels= FALSE, 
             colors= blueWhiteRed(50), 
             textMatrix= textMatrix, 
@@ -296,8 +293,107 @@ speciessigmods <- rownames(subset(modulePs, species < 0.05))
 print(paste0("Number of significant modules by species: ", length(speciessigmods)))
 stagesigmods <- rownames(subset(modulePs, age_weeks < 0.05))
 print(paste0("Number of significant modules by developmental stage: ", length(stagesigmods)))
+
+sigmods <- rownames(modulePs[rowSums(modulePs < 0.05) >= 1, ])
+print(paste0("Number of unique significant modules by any variable: ", length(sigmods)))
+
+# get info for any of these with p values (example = stages):
+# format(subset(modulePs, morph < 0.05), scientific = FALSE)
+# 
 ```
 
+## What are my hub genes?
+
+```{R Hub genes}
+
+# remove "ME" from all sigmods
+sigmods <- gsub(pattern = "ME", replacement = "", sigmods)
+probes = names(vsd)
+nTop = 30
+moduleColors=mergedColors
+adj = adjacency(vsd, power = 10, type = "signed") #specify network type
+
+## Translate adjacency into topological overlap matrix and calculate the corresponding dissimilarity
+
+TOM = TOMsimilarity(adj, TOMType="signed") #Topological Overlap Matrix
+dissTOM = 1-TOM 
+
+for(i in 1:length(unique(sigmods))){
+  #inModule = sigmods[i];
+  #modProbes = probes[inModule];
+  inModule = (moduleColors == sigmods[i]);
+  modProbes = probes[inModule];
+  ## Select the corresponding Topological Overlap
+  
+  modTOM = TOM[inModule, inModule];
+  dimnames(modTOM) = list(modProbes, modProbes)
+  
+  ## Genes with highest connectivity within each significant module
+  
+  IMConn = softConnectivity(vsd[, modProbes])
+  top = (rank(-IMConn) <= nTop)
+  
+  tempdat<-data.frame(IMConn,modProbes)[order(-IMConn),]
+  names(tempdat)<-c("IMConnectivity","target_id")
+  tempdat$ModuleColor <- rep(sigmods[i],nrow(tempdat))
+  #tempdat2 = left_join(tempdat,preGO1, by = "target_id")
+  write.csv(tempdat, paste("results/WGCNAresults/HubGenes",sigmods[i],".csv",sep="_"), na="", row.names=FALSE)
+}
+
+## List all the files
+
+temp <- list.files(path = "results/WGCNAresults", pattern = "*HubGenes")
+temp <- paste("results/WGCNAresults/", temp, sep = "")
+Hub_genes = do.call(rbind, lapply(temp, function(x) read.csv(x, stringsAsFactors = FALSE)))
+write.csv(Hub_genes, paste("results/WGCNAresults/HubGenes_all.csv",sep="_"), na="", row.names=FALSE)
+
+```
+
+```{R HUBGENES2}
+
+# Recalculate topological overlap if needed
+#TOM = TOMsimilarityFromExpr(vsd, power = 10)
+
+# Select modules
+sigmods # Lists modules of interest
+module = "purple"    
+moduleColors = mergedColors
+# Select module probes
+probes = names(vsd)
+inModule = is.finite(match(moduleColors, module));
+modProbes = probes[inModule];
+#modGenes = annote_df$gene_name[match(modProbes, annote_df$target_id)];
+
+# Select the corresponding Topological Overlap
+modTOM = TOM[inModule, inModule];
+dimnames(modTOM) = list(modProbes, modProbes)
+cyt = exportNetworkToCytoscape(modTOM,
+       edgeFile = paste("results/WGCNAresults/CytoscapeInput-edges-", paste(module, collapse="-"), ".txt"),
+       nodeFile = paste("results/WGCNAresults/CytoscapeInput-nodes-", paste(module, collapse="-"), ".txt"),
+       weighted = TRUE,
+       threshold = 0.175, # Change to get about 30
+       nodeNames = modProbes,
+       #altNodeNames = modGenes,
+       nodeAttr = moduleColors[inModule]);
+cyt
+
+## Record of thresholds:
+# Dark grey - 0.02
+# light green - 0.1
+# blue - 0.4
+# darkgreen - 0.02
+# darkturquoise - 0.1
+# red = 0.4
+# turquoise = 0.4
+# salmon = 0.15
+
+
+cytoscapePing()
+
+```
+
+
+### Rank genes from significant modules for GO analyses
 Get gene information for these.
 
 ```{R, WGNCA: gene information for significant modules by morph}
