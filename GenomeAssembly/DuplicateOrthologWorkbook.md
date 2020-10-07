@@ -20,8 +20,6 @@ READS="/mnt/lustre/macmaneslab/ams1236/imitator_genome/reads/PacBio_reads.fa"
 module purge
 module load linuxbrew/colsa
 
-echo Running BWA on $ASSEMBLY
-
 cd /mnt/lustre/macmaneslab/tml1019/seniorThesis/BWAandDepth/PacBio_aligned_reads
 
 # Run MiniMap becuase this is long read
@@ -150,8 +148,8 @@ Calculate number of duplicated orthologs per scaffold normalized by scaffold len
 
 comboDictionary = dict()
 
-#Read in file with the scaffold name and its length
-with open("imitator.1.3.6lengthperscaff.csv", "r") as duplicatedGenes:
+#Read in file with the scaffold name and its length; input file is the index of the genome from samtools
+with open("imitator.1.3.6.fa.fai", "r") as duplicatedGenes:
     for duplicatedLine in duplicatedGenes:
         duplicatedLine_stripped = duplicatedLine.strip()
         duplicate = duplicatedLine_stripped.split(",")
