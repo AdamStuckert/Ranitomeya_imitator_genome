@@ -244,3 +244,5 @@ with open("BUSCO4_duplicated.tsv", "r") as duplicatedGenes:
         if (check == True):
             print(key, dupDictionary[key])
 ```
+
+We then calculated sliding window statistics for the data using an [R script that we ran on the cluster](ADD LINK HERE). The results of this script were then used to compare orthologs present in single copies and duplicated copies in a [subsequent R script which we ran locally](ADD LINK HERE).
