@@ -53,3 +53,12 @@ After running this I am left with an assembly that has been purged of duplicates
 
 > sbatch ~/scripts/genomemetrics.job purged.fa purged.genome
 
+Results:
+
+Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
+--- | --- | --- | --- | --- | ---
+imitator.1.3.6 | 6.79 | 301,327 | 397,629 | 0.01 | C:92.7%[S:73.6%,D:19.1%],F:4.3%,M:3.0%,n:3950
+purged.fa | 6.64 | 318,047 | 416,770 | 0.01 | pending
+
+The purged genome assembly has 65,005 contigs in 60,563 scaffolds.
+
