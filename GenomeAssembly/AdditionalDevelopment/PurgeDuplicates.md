@@ -1,4 +1,4 @@
-### Additional genome development
+# Additional genome development
 
 This documents additional ongoing development of the genome. I'm especially interested in 1) attempting to remove regions of uncollapsed heterozygosity and 2) scaffold this further if possible.
 
@@ -6,7 +6,7 @@ This documents additional ongoing development of the genome. I'm especially inte
 
 I am going to attempt to use both the programs `purge_dups` and `purge_haplotigs` to do this. The latter is a bit more annoying, as it keeps getting hung and requires X11 support and both of those are, frankly, annoying as shit.
 
-# Purge dups run
+### Purge dups run
 
 The first program is [purge dups](https://github.com/dfguan/purge_dups).
 
