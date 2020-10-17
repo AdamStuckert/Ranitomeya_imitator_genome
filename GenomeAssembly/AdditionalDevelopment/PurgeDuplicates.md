@@ -58,7 +58,7 @@ Results:
 Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO 
 --- | --- | --- | --- | --- | ---
 imitator.1.3.6 | 6.79 | 301,327 | 397,629 | 0.01 | C:92.7%[S:73.6%,D:19.1%],F:4.3%,M:3.0%,n:3950
-purged.fa | 6.64 | 318,047 | 416,770 | 0.01 | pending
+purged.fa | 6.64 | 318,047 | 416,770 | 0.01 | C:92.6%[S:73.5%,D:19.1%],F:4.3%,M:3.1%,n:3950
 
-The purged genome assembly has 65,005 contigs in 60,563 scaffolds.
+The purged genome assembly has 65,005 contigs in 60,563 scaffolds. As you can see however, basically no improvement in genic content, particularly duplicated orthologs.
 
