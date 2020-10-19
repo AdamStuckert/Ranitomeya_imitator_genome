@@ -79,3 +79,9 @@ imitator.1.0.purged.fa | 6.63 | 207,656 | NA | 0.00% | pending
 
 The histogram looks like this:
 ![alt text](SupplementalFiles/PB.stat.png?raw=true "Why are you hovering over a dang histogram?")
+
+The automated pipeline used these as cutoffs:
+
+> 5       -8      36      37      57      141
+
+These refer to....????
