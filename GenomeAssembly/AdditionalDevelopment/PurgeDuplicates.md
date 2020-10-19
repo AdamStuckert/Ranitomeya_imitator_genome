@@ -44,9 +44,6 @@ purge_dups -2 -T cutoffs -c PB.base.cov $assembly.split.self.paf.gz > dups.bed 2
 
 echo Getting purged sequences...
 get_seqs dups.bed $genome
-
-### UNKNOWN FROM GIT: Step 4. Merge hap.fa and $hap_asm and redo the above steps to get a decent haplotig set.
-## I have to figure out precisely what this means.
 ```
 
 After running this I am left with an assembly that has been purged of duplicates, which is called `purged.fa`. I then check the quality with my genome metrics assessment script.
