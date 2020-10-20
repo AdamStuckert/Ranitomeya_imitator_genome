@@ -77,6 +77,10 @@ Assembly | Genome Size (GB) | Contig N50 | Scaffold N50 | %Ns | BUSCO
 imitator.1.0.fa | 6.77 | 198,779 | NA | 0.00% | C:92.3%[S:75.4%,D:16.9%],F:4.6%,M:3.1%,n:3950
 imitator.1.0.purged.fa | 6.63 | 207,656 | NA | 0.00% | C:92.2%[S:75.4%,D:16.8%],F:4.6%,M:3.2%,n:3950
 
+Using the initial assembly did not help either.  So I set about trying to better parameterize `purge_dups`. The first step was to examine a histogram of read coverage. They have a script to produce a reasonably good histogram.
+
+> hist_plot.py PB.stat PB.stat.png
+
 The histogram looks like this:
 ![alt text](SupplementalFiles/PB.stat.png?raw=true "Why are you hovering over a dang histogram?")
 
