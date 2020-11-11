@@ -46,3 +46,13 @@ cd $HOME/imitator_genome/wtdbg_imitator_axolotlparameters
 -fo imitator_axolotlparameters.ctg.fa
 ```
 
+### Results, compared to previous attempts
+
+Assembly | Genome Size (GB) | Contig N50 | Number of contigs | BUSCO 
+--- | --- | --- | --- | ---
+Initial wtdbg2 assembly, polished (imi_wtdbg.ctg.polished.fa) | 6.77 | 198779 | *add* | C:92.3%[S:75.4%,D:16.9%],F:4.6%,M:3.1%,n:3950
+imitator.1.3.6 (final version in bioRxiv submission) | 6.79 | 301327 | *add* | C:92.7%[S:73.6%,D:19.1%],F:4.3%,M:3.0%,n:3950
+imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
+
+This led to a pretty dramatic decrease in the overall number of duplicated BUSCO orthologs, even though it led to slightly higher fragmented and "missing" gene content. Some polishing might improve this. Guess I need to pursue this more. Polishing (with pilon and racon) and Hi-C scaffolding are the next steps to test things out.
+
