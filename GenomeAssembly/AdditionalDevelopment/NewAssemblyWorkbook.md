@@ -56,3 +56,53 @@ imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | C:90
 
 This led to a pretty dramatic decrease in the overall number of duplicated BUSCO orthologs, even though it led to slightly higher fragmented and "missing" gene content. Some polishing might improve this. Guess I need to pursue this more. Polishing (with pilon and racon) and Hi-C scaffolding are the next steps to test things out.
 
+### Polishing:
+
+I tried a round of Pilon polishing.
+
+```bash
+# first map Illumina (10x) reads to the genome
+sbatch bwa.job imitator_axolotlparameters.ctg.fa
+# second, split up the genome into 80 chunks so pilon polishing doesn't take forever
+./chunks.sh imitator_axolotlparameters.ctg.fa
+# submit pilon polishing array
+sbatch --dependency=afterok:3830 pilon.job imitator_axolotlparameters.ctg.fa imitator_axolotlparameters.ctg.pilonpolished.fa
+```
+
+I also tried a round of Racon polishing.
+
+```
+#!/bin/bash
+#SBATCH --partition=macmanes,shared
+#SBATCH -J racon
+#SBATCH --output racon.log
+#SBATCH --cpus-per-task=24
+#SBATCH --exclude=node117,node118
+#SBATCH --mem=700000
+set -x
+
+DIR=$(pwd)
+ASSEMBLY="$HOME/imitator_genome/imitator_axolotlparameters.ctg.fa"
+genome=$(basename $ASSEMBLY)
+READS=$"$HOME/imitator_genome/raw_PacBio_data/R_imitator_PacBio.fa"
+
+
+module load linuxbrew/colsa
+
+# preparation
+mkdir racon
+cd racon
+
+cp $ASSEMBLY .
+
+awk '{print $1}' $genome > new.fasta
+mv new.fasta $genome
+
+### First align reads with minimap2
+echo aligning with minimap2
+minimap2 -I10G -t 40 -xmap-pb $genome $READS | gzip -c - > Rimi.PB.paf.gz
+
+### Run racon
+echo Polishing with racon
+racon -t 40 $READS Rimi.PB.paf.gz $genome > imitator_axolotlparameters.ctg.raconpolished.fa
+```
