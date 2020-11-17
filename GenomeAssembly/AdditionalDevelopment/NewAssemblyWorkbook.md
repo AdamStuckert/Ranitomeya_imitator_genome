@@ -106,3 +106,64 @@ minimap2 -I10G -t 40 -xmap-pb $genome $READS | gzip -c - > Rimi.PB.paf.gz
 echo Polishing with racon
 racon -t 40 $READS Rimi.PB.paf.gz $genome > imitator_axolotlparameters.ctg.raconpolished.fa
 ```
+
+
+Results:
+
+Assembly | Genome Size (GB) | Contig N50 | Number of contigs | BUSCO 
+--- | --- | --- | --- | ---
+imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
+mitator_axolotlparameters.ctg.pilonpolished.fa | 7.1 | 176,010 | 92,773 | C:92.4%[S:79.4%,D:13.0%],F:4.2%,M:3.4%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
+
+Alright, so this Racon polished assembly looks pretty good! Next I'll try purging duplicates...
+
+```
+#!/bin/bash
+#SBATCH --partition=macmanes,shared
+#SBATCH -J purge_dups
+#SBATCH --output purge_dups_slurm.log
+#SBATCH --cpus-per-task=40
+#SBATCH --exclude=node117,node118
+#SBATCH --mem=300G
+set -x
+
+DIR=$(pwd)
+ASSEMBLY="$HOME/imitator_genome/racon/imitator_axolotlparameters.ctg.raconpolished.fa"
+genome=$(basename $ASSEMBLY)
+READS=$"$HOME/imitator_genome/reads/PacBio_reads.fa"
+
+
+module load linuxbrew/colsa
+
+ln -s $ASSEMBLY
+
+### run pipeline step by step
+echo aligning with minimap2
+minimap2 -I50G -t 40 -xmap-pb $genome $READS | gzip -c - > RimiPB.paf.gz
+
+echo initial calculations
+pbcstat RimiPB.paf.gz
+calcuts PB.stat > cutoffs 2>calcults.log
+
+echo Splitting assembly
+split_fa $genome > $assembly.split
+minimap2 -I50G -t 40 -xasm5 -DP $assembly.split $assembly.split | gzip -c - > $assembly.split.self.paf.gz
+
+echo Purging haplotigs with overlaps
+purge_dups -2 -T cutoffs -c PB.base.cov $assembly.split.self.paf.gz > dups.bed 2> purge_dups.log
+
+echo Getting purged sequences...
+get_seqs dups.bed $genome
+```
+
+## Results
+
+Assembly | Genome Size (GB) | Contig N50 | Number of contigs | BUSCO 
+--- | --- | --- | --- | ---
+imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
+mitator_axolotlparameters.ctg.pilonpolished.fa | 7.1 | 176,010 | 92,773 | C:92.4%[S:79.4%,D:13.0%],F:4.2%,M:3.4%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.purged.fa | 6.96 | 185,798 | 76,258 | *pending*
+
+
