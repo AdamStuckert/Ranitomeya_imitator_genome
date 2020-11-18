@@ -164,6 +164,6 @@ Assembly | Genome Size (GB) | Contig N50 | Number of contigs | BUSCO
 imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
 mitator_axolotlparameters.ctg.pilonpolished.fa | 7.1 | 176,010 | 92,773 | C:92.4%[S:79.4%,D:13.0%],F:4.2%,M:3.4%,n:3950
 imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
-imitator_axolotlparameters.ctg.raconpolished.purged.fa | 6.96 | 185,798 | 76,258 | *pending*
+imitator_axolotlparameters.ctg.raconpolished.purged.fa | 6.96 | 185,798 | 76,258 | C:91.8%[S:83.9%,D:7.9%],F:4.5%,M:3.7%,n:3950
 
 
