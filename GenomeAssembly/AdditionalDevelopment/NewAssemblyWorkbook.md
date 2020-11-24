@@ -167,3 +167,11 @@ imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | C:91.
 imitator_axolotlparameters.ctg.raconpolished.purged.fa | 6.96 | 185,798 | 76,258 | C:91.8%[S:83.9%,D:7.9%],F:4.5%,M:3.7%,n:3950
 
 
+I also did a second round of racon polishing. Just out of curiousity. And ran pilon by just polishing bases and ignoring gaps. These were run separately.
+
+Assembly | Genome Size (GB) | Contig N50 | Number of contigs | BUSCO 
+--- | --- | --- | --- | ---
+imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
+mitator_axolotlparameters.ctg.pilonpolished.fa | 7.1 | 176,010 | 92,773 | C:92.4%[S:79.4%,D:13.0%],F:4.2%,M:3.4%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
+imitator_axolotlparameters.ctg.raconpolished2x.fa | 7.1 | 180,375 | 83,067 | C:91.9%[S:81.8%,D:10.1%],F:4.6%,M:3.5%,n:3950
