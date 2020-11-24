@@ -25,11 +25,6 @@ $HOME/imitator_genome/maker_data/maker_bopts.ctl \
 $HOME/imitator_genome/maker_data/maker_exe.ctl
 
 
-#######################################################################
-###########  is the lastal line correct here????   ####################
-#######################################################################
-
-
 fasta_merge -d "$species".maker.output/"$species"_master_datastore_index.log -o "$species"
 gff3_merge -d "$species".maker.output/"$species"_master_datastore_index.log -o "$species".gff3 -n
 lastal -P22 $HOME/imitator_genome/maker_data/uniprot "$species".all.maker.proteins.fasta -f BlastTab > blast.out
