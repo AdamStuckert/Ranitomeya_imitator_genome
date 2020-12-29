@@ -178,6 +178,12 @@ imitator_axolotlparameters.ctg.raconpolished2x.fa | 7.1 | 180,375 | 83,067 | C:9
 
 Given no real improvement in the 2x racon polished assembly, I ran arcs to scaffold the 1x racon polished assembly:
 
+```bash
+sbatch arcs.job $HOME/imitator_genome/racon/imitator_axolotlparameters.ctg.raconpolished.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.fa 
+```
+
+Results:
+
 Assembly | Genome Size (GB) | Contig N50 | Number of contigs | Scaffold N50 | Number of Scaffolds | BUSCO 
 --- | --- | --- | --- | --- | --- | ---
 imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | -- | -- | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
