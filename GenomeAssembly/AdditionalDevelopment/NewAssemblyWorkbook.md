@@ -179,8 +179,8 @@ imitator_axolotlparameters.ctg.raconpolished2x.fa | 7.1 | 180,375 | 83,067 | C:9
 Given no real improvement in the 2x racon polished assembly, I ran arcs to scaffold the 1x racon polished assembly:
 
 Assembly | Genome Size (GB) | Contig N50 | Number of contigs | Scaffold N50 | Number of Scaffolds | BUSCO 
---- | --- | --- | --- | ---
-imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | NA | NA | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
-imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | NA | NA | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
+--- | --- | --- | --- | --- | --- | ---
+imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | -- | -- | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | -- | -- | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
 imitator_axolotlparameters.ctg.raconpolished.arcsscaff.fa | 7.1 | 179,075 | 85,427 | 303,634 | 74312 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
 
