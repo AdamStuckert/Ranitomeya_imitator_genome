@@ -211,4 +211,21 @@ imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | -- | 
 imitator_axolotlparameters.ctg.raconpolished.arcsscaff.fa | 7.1 | 179,075 | 85,427 | 303,634 | 74,312 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
 imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.fa | 7.1 | 180,810 | 84,897 | 307,465 | 73,847 | 91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
 
+Gapfilled with ONT data and LRGap.
 
+`sbatch lrgap.ont.job rails_alldata_nil/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled.fa`
+
+Results:
+
+Assembly | Genome Size (GB) | Contig N50 | Number of contigs | Scaffold N50 | Number of Scaffolds | BUSCO 
+--- | --- | --- | --- | --- | --- | ---
+imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | -- | -- | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | -- | -- | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.fa | 7.1 | 179,075 | 85,427 | 303,634 | 74,312 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.fa | 7.1 | 180,810 | 84,897 | 307,465 | 73,847 | 91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled.fa | 7.1 | 213,548 | 81,032 | 307,465 | 73,847 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+
+Gapdilled with PB data and LRGap.
+
+
+`sbatch lrgap.pb.job lrgapfilled_ont/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.fa`
