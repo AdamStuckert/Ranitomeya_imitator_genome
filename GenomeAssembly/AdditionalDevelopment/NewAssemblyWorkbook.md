@@ -176,7 +176,8 @@ imitator_axolotlparameters.ctg.pilonpolished.fa | 7.1 | 176,010 | 92,773 | C:92.
 imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
 imitator_axolotlparameters.ctg.raconpolished2x.fa | 7.1 | 180,375 | 83,067 | C:91.9%[S:81.8%,D:10.1%],F:4.6%,M:3.5%,n:3950
 
-Given no real improvement in the 2x racon polished assembly, I ran arcs to scaffold the 1x racon polished assembly:
+Given no real improvement in the 2x racon polished assembly, I ran arcs to scaffold the 1x racon polished assembly. Note, I did this not with the purged assembly.
+
 
 ```bash
 sbatch arcs.job $HOME/imitator_genome/racon/imitator_axolotlparameters.ctg.raconpolished.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.fa 
@@ -229,3 +230,39 @@ Gapdilled with PB data and LRGap.
 
 
 `sbatch lrgap.pb.job lrgapfilled_ont/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.fa`
+
+Results:
+
+Assembly | Genome Size (GB) | Contig N50 | Number of contigs | Scaffold N50 | Number of Scaffolds | BUSCO 
+--- | --- | --- | --- | --- | --- | ---
+imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | -- | -- | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | -- | -- | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.fa | 7.1 | 179,075 | 85,427 | 303,634 | 74,312 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.fa | 7.1 | 180,810 | 84,897 | 307,465 | 73,847 | 91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled.fa | 7.1 | 213,548 | 81,032 | 307,465 | 73,847 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.fa | 7.1 | 240,974 | 78,441 | 307,465 | 73,847 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+
+Next steps for future adam....
+
+Polish with racon again. ---verify that this isn't shit
+(I just modified my racon script, so submit with `sbatch raconpostscaf.job`).  **NOTE: Check that the headers are not dumb**
+
+Scaffold again with 10x data:
+
+```sbatch arcs.job raconpostscaf/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.fa```
+
+Scaffold + gapfill with cobbler/rails.
+
+sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.3.1.fa nil imitator.1.3.2.fa
+
+Polish with racon again.?????
+
+Now on to LR gapfilling with the Nanopore data first, followed by the PacBio data.
+
+sbatch lrgap.ont.job imitator.1.3.3.fa imitator.1.3.4.fa
+sbatch lrgap.pb.job imitator.1.3.4.fa imitator.1.3.5.fa 
+
+Final polish????? 
+
+Repeat Modeler ---> Repeat Masker ---> Maker.
+
