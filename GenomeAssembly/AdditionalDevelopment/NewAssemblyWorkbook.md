@@ -247,6 +247,18 @@ Next steps for future adam....
 Polish with racon again. ---verify that this isn't shit
 (I just modified my racon script, so submit with `sbatch raconpostscaf.job`).  **NOTE: Check that the headers are not dumb** **SUBSEQUENT NOTE: Headers are, indeed, dumb**
 
+Results:
+
+Assembly | Genome Size (GB) | Contig N50 | Number of contigs | Scaffold N50 | Number of Scaffolds | BUSCO 
+--- | --- | --- | --- | --- | --- | ---
+imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | -- | -- | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | -- | -- | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.fa | 7.1 | 179,075 | 85,427 | 303,634 | 74,312 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.fa | 7.1 | 180,810 | 84,897 | 307,465 | 73,847 | 91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled.fa | 7.1 | 213,548 | 81,032 | 307,465 | 73,847 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.fa | 7.1 | 240,974 | 78,441 | 307,465 | 73,847 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.fa | 7.06 | 275,268 | 73,453 | 309,855 | 71,479 | **pending**
+
 Scaffold again with 10x data:
 
 ```
