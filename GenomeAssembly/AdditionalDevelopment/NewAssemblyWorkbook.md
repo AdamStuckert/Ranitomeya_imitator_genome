@@ -245,7 +245,7 @@ imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.fa | 7.
 Next steps for future adam....
 
 Polish with racon again. ---verify that this isn't shit
-(I just modified my racon script, so submit with `sbatch raconpostscaf.job`).  **NOTE: Check that the headers are not dumb** **Subsequent note: Headers are, indeed, dumb**
+(I just modified my racon script, so submit with `sbatch raconpostscaf.job`).  **NOTE: Check that the headers are not dumb** **SUBSEQUENT NOTE: Headers are, indeed, dumb**
 
 Scaffold again with 10x data:
 
