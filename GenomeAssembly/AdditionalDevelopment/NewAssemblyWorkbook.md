@@ -257,7 +257,9 @@ imitator_axolotlparameters.ctg.raconpolished.arcsscaff.fa | 7.1 | 179,075 | 85,4
 imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.fa | 7.1 | 180,810 | 84,897 | 307,465 | 73,847 | 91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
 imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled.fa | 7.1 | 213,548 | 81,032 | 307,465 | 73,847 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
 imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.fa | 7.1 | 240,974 | 78,441 | 307,465 | 73,847 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
-imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.fa | 7.06 | 275,268 | 73,453 | 309,855 | 71,479 | **pending**
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.fa | 7.06 | 275,268 | 73,453 | 309,855 | 71,479 | C:92.1%[S:80.1%,D:12.0%],F:2.3%,M:5.6%,n:5310
+
+One thing of note here...this increased duplicates by 2%. Whether or not this is biologically correct....? Who knows?
 
 Scaffold again with 10x data:
 
