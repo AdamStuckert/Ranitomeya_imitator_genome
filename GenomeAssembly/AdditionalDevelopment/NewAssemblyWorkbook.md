@@ -271,7 +271,24 @@ mv tmp.fa raconpostscaf/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.r
 sbatch arcs.job raconpostscaf/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.fa
 ```
 
+Results:
+
+Assembly | Genome Size (GB) | Contig N50 | Number of contigs | Scaffold N50 | Number of Scaffolds | BUSCO 
+--- | --- | --- | --- | --- | --- | ---
+imitator_axolotlparameters.ctg.fa (not polished) | 7.1 | 175,973 | 92,773 | -- | -- | C:90.6%[S:88.1%,D:2.5%],F:4.8%,M:4.6%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.fa | 7.1 | 179,075 | 85,427 | -- | -- | C:91.8%[S:83.8%,D:8.0%],F:4.5%,M:3.7%,n:3950
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.fa | 7.1 | 179,075 | 85,427 | 303,634 | 74,312 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.fa | 7.1 | 180,810 | 84,897 | 307,465 | 73,847 | 91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled.fa | 7.1 | 213,548 | 81,032 | 307,465 | 73,847 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.fa | 7.1 | 240,974 | 78,441 | 307,465 | 73,847 | C:91.9%[S:82.1%,D:9.8%],F:2.4%,M:5.7%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.fa | 7.06 | 275,268 | 73,453 | 309,855 | 71,479 | C:92.1%[S:80.1%,D:12.0%],F:2.3%,M:5.6%,n:5310
+imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.fa | 7.065 | 275,268 | 73,453 | 411,133 | 65,539 | C:92.2%[S:80.5%,D:11.7%],F:2.4%,M:5.4%,n:5310
+
 Scaffold + gapfill with cobbler/rails.
+
+```bash
+sbatch rails.job sbatch rails.job $HOME/imitator_genome/arcs_run/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.fa /arcs_run/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.fa 
+```
 
 sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.3.1.fa nil imitator.1.3.2.fa
 
