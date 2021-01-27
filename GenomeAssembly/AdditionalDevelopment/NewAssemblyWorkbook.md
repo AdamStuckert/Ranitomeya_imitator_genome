@@ -287,7 +287,7 @@ imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polishe
 Scaffold + gapfill with cobbler/rails.
 
 ```bash
-sbatch rails.job sbatch rails.job $HOME/imitator_genome/arcs_run/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.fa /arcs_run/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.fa 
+sbatch rails.job $HOME/imitator_genome/arcs_run/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.fa 
 ```
 
 sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.3.1.fa nil imitator.1.3.2.fa
