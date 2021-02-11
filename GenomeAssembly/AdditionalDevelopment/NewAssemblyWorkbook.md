@@ -290,14 +290,18 @@ Scaffold + gapfill with cobbler/rails.
 sbatch rails.job $HOME/imitator_genome/arcs_run/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.fa 
 ```
 
-sbatch --output rails.alldat.nilspecs.log rails.job imitator.1.3.1.fa nil imitator.1.3.2.fa
+*currently running genome metrics on rails*
 
 Polish with racon again.?????
 
+*did not racon polish*
+
 Now on to LR gapfilling with the Nanopore data first, followed by the PacBio data.
 
-sbatch lrgap.ont.job imitator.1.3.3.fa imitator.1.3.4.fa
+```
+sbatch lrgap.ont.job rails_alldata_nil/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.gapfilled1x.fa
 sbatch lrgap.pb.job imitator.1.3.4.fa imitator.1.3.5.fa 
+```
 
 Final polish????? 
 
