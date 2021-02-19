@@ -87,7 +87,7 @@ STUDY   PRJEB28312
 SAMPLE   ERS5098337
 ASSEMBLYNAME   Ranitomeya_imitator_genomeassembly_1.0
 ASSEMBLY_TYPE	isolate
-COVERAGE   35X
+COVERAGE   35
 PROGRAM   wtdbg2
 PLATFORM   PacBio Sequel RSII, Oxford Nanopore Technologies, Illumina HiSeq 2500
 MINGAPLENGTH   50
@@ -102,6 +102,6 @@ Script to submit:
 
 > java -jar $HOME/software/webin-cli/webin-cli-3.6.0.jar -context=genome -manifest=ENAmanifest.txt -username=USERNAME -password=PASSWORD -validate -submit
 
-Obviously, change the user name and password fields first.
+Obviously, change the user name and password fields first. Additional note, this assumes that all the files (manifest, flatfile, assembly file, etc) are within the same directory from which you call this command.
 
 That is it! Or at least, I think it is. I may end up updating this later when I discover I was wrong.
