@@ -79,3 +79,17 @@ eval $myCommand
 ```
         
         
+And finally, the manifest file to submit!
+
+```
+STUDY   PRJEB28312
+SAMPLE   ERS5098337
+ASSEMBLYNAME   Ranitomeya_imitator_genomeassembly_1.0
+ASSEMBLY_TYPE	isolate
+COVERAGE   35X
+PROGRAM   wtdbg2
+PLATFORM   PacBio Sequel RSII, Oxford Nanopore Technologies, Illumina HiSeq 2500
+MINGAPLENGTH   50
+MOLECULETYPE   genomic DNA
+FASTA   Ranitomeya_imitator_genomeassembly_1.0.fa.gz
+```
