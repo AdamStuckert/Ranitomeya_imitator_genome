@@ -78,8 +78,9 @@ eval $myCommand
 
 ```
         
-        
-And finally, the manifest file to submit!
+#### Preparing to submit the genom:
+
+We need a tab-delimited manifest file to submit!
 
 ```
 STUDY   PRJEB28312
@@ -92,4 +93,15 @@ PLATFORM   PacBio Sequel RSII, Oxford Nanopore Technologies, Illumina HiSeq 2500
 MINGAPLENGTH   50
 MOLECULETYPE   genomic DNA
 FASTA   Ranitomeya_imitator_genomeassembly_1.0.fa.gz
+FLATFILE	Ranitomeya_imitator_genomeassembly_1.0.embl.gz	
 ```
+
+All genome assemblies submitted to ENA **must be submitted via their command line interface**. You cannot use the webpage. The program is java based and found here: https://github.com/enasequence/webin-cli
+
+Script to submit:
+
+> java -jar $HOME/software/webin-cli/webin-cli-3.6.0.jar -context=genome -manifest=ENAmanifest.txt -username=USERNAME -password=PASSWORD -validate -submit
+
+Obviously, change the user name and password fields first.
+
+That is it! Or at least, I think it is. I may end up updating this later when I discover I was wrong.
