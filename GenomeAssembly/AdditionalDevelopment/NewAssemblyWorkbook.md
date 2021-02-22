@@ -318,7 +318,10 @@ sbatch lrgap.ont.job rails_alldata_nil/imitator_axolotlparameters.ctg.raconpolis
 sbatch lrgap.pb.job lrgapfilled_ont/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.gapfilled1x.fa imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.gapfilled2x.fa
 ```
 
-Final polish????? 
+It turns out that using LRgap to fill gaps actually decreased my contiguity by quite a bit (scaffold N50 from 413 Kbp to 307 Kbp). So I think I will not use that. 
+
+So I tried one last polishing run using the genome `rails_alldata_nil/imitator_axolotlparameters.ctg.raconpolished.arcsscaff.rails.gapfilled2x.polished.arcs.rails.fa`.
+
 
 Repeat Modeler ---> Repeat Masker ---> Maker.
 
