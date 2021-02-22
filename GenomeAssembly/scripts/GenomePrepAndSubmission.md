@@ -43,6 +43,8 @@ Contents of `maker_imitator.sh`:
 # Script example to simplify the use of many options #
 ########################################################
 
+ml linuxbrew/colsa
+
 #PATH to the FASTA file used to produce the annotation
 GENOME=`dirname "$0"`"/Ranitomeya_imitator_genomeassembly_1.0.fa"
 
@@ -77,6 +79,26 @@ echo -e "Running the following command:\n$myCommand"
 eval $myCommand
 
 ```
+        
+        
+ RERUN EMBLmyGFF!
+ 
+ ```bash
+ ml linuxbrew/colsa
+ 
+mkdir gff2embl/speedtest
+cp genome_versions/imitator.1.3.6.fa gff2embl/speedtest
+cp maker_1.3.6.masked_24June/Ranitomeya_imitator.imitator.1.3.6.functional.gff3 gff2embl/speedtest
+
+cd gffgff2embl/speedtest2embl
+sed "s/_pilon//g" imitator.1.3.6.fa > Ranitomeya_imitator_genomeassembly_1.0.fa
+sed "s/_pilon//g" Ranitomeya_imitator.imitator.1.3.6.functional.gff3 > Ranitomeya_imitator_genomeassembly_1.0.gff3
+
+./maker_imitator.sh
+```
+        
+        
+        
         
 #### Preparing to submit the genom:
 
