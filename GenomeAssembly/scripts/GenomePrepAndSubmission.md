@@ -1,3 +1,10 @@
+## First register the requisite information with ENA
+
+1. Register the project
+2. Register the sample used for assembly
+3. Submit this sample
+4. Register a prefix for your assembly within the project edit page on ENA
+
 ## Convert genome annotations into the EMBL format for submission
 
 This is the code I used for getting my genome annotations from Maker into the correct format for deposition in the European Nucleotide Archive.
@@ -51,11 +58,11 @@ GENOME=`dirname "$0"`"/Ranitomeya_imitator_genomeassembly_1.0.fa"
 #PATH to the ANNOTATION in gff3 FORMAT
 ANNOTATION=`dirname "$0"`"/Ranitomeya_imitator_genomeassembly_1.0.gff3"
 
-#PROJECT name registered on EMBL
+#PROJECT name registered on ENA
 PROJECT="PRJEB28312 "
 
-#Locus tag registered on EMBL
-LOCUS_TAG="RIMI"
+#Locus tag registered on ENA
+LOCUS_TAG="RIMITATOR"
 
 # species name
 SPECIES="Ranitomeya imitator"
