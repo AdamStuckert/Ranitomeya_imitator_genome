@@ -7,3 +7,6 @@ There are two subdirectories in this GitHub repository. The first contains [deta
 All relevant data can be found in the European Nucleotide Archive under accession number [PRJEB28312](https://www.ebi.ac.uk/ena/browser/view/PRJEB28312).
 
 ![](https://github.com/AdamStuckert/Ranitomeya_imitator_genome/blob/master/MimeticGeneExpressionFrogs.png)
+
+
+[![DOI](https://zenodo.org/badge/199075780.svg)](https://zenodo.org/badge/latestdoi/199075780)
