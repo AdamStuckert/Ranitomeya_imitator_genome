@@ -23,6 +23,8 @@ echo "gff: $GFF"
 echo "Reads directory: $READ_DIR"
 echo "Reads suffix: $SUFFIX"
 
+module purge
+
 # make a directory for star read mapping
 mkdir $DIR/STAR_mapped
 
