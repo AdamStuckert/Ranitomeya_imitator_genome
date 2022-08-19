@@ -22,6 +22,8 @@ echo "gff: $GFF"
 echo "Reads directory: $READ_DIR"
 echo "Reads suffix: $SUFFIX"
 
+module purge
+
 # make a directory for star genome index
 mkdir $DIR/STAR_index
 
