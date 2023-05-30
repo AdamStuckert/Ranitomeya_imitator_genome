@@ -8,16 +8,6 @@ Genomes were assessed with a script (`genomemetrics.job`) which runs `assemblath
 #### A note about scripts used
 Scripts used in this notebook/project are found in the scripts directory. All `*.job` scripts are slurm submission scripts (our HPC here at UNH uses slurm) and all `*.sh` scripts are just generic bash scripts that run quickly on the head node.
 
-## Supernova assembly
-This took a while to run, but eventually completed. However, the assembly was small relative to what we expected (25% of tetrapod core genes) and crappy. Scaffolding with ONT reads helped, but it was still crappy. Abondoned in favor of assemblies with PacBio data.
-
-## Falcon assembly
-This seemed very promising. However, it produced > 16 TB of intermediate files and we hit quota. I aim to resume this eventually, if possible.
-
-**A note from future Adam:** He never resumed this, despite his desire to. Just too much intermediate data to store.
-
-## Masurca assembly
-This ran for about 35 days, was making almost no progress, and so I eventually gave up after reaching quota issues due to the Falcon assembly.
 
 ## wtdbg2 assembly
 This is the assembler that was used to produce the axolotl genome. This 1) works and 2) is fast. Much of this documentation is for this approach, largely because we were able to actually assemble a genome from it. The "good" `subreads.bam` from the sequencer had already been converted to fasta files using `samtools fasta` before this for our attempt using Falcon.
