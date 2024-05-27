@@ -11,11 +11,14 @@ reads=$(grep "Number of input reads" $file | cut -f 2)
 unique=$(grep "Uniquely mapped reads %" $file | cut -f 2) 
 multi=$(grep "% of reads mapped to multiple loci" $file | cut -f 2)
 toomany=$(grep "% of reads mapped to too many loci" $file | cut -f 2)
-unmapped=$(grep "reads unmapped: too short" $file | cut -f 2)
+unmapped=$(grep "% of reads unmapped: too short" $file | cut -f 2)
 printf "%s\t%s\t%s\t%s\t%s\t%s\n" "$sample" "$reads" "$unique" "$multi" "$toomany" "$unmapped" >> mappingdata.tab
 done
 
 
 ### Calculate read mapping statistics with a custom R script I wrote
+# load R module:
+module add R/4.2.0-foss-2021b
 STATS=$(which ReadMappingStats.R)
-Rscript $STATS
+Rpath=$(which R | sed "s/R$//")
+${Rpath}/Rscript $STATS

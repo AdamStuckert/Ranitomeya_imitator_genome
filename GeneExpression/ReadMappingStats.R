@@ -31,4 +31,3 @@ med_map = round(median(dat$Uniquely_mapping_reads), 2)
 cat(paste0("Average mapping rate: ", ave_map,"%\n"))
 cat(paste0("Standard deviation of the mapping rate: ", sd_map,"%\n"))
 cat(paste0("Median mapping rate: ", med_map,"%\n"))
-
